@@ -110,6 +110,12 @@ const dominoTheme = [
 // =========================================================================
 // 3. GAME STATE & SEPARATED LEVEL POOLS
 // =========================================================================
+
+function generateTileTheme(themeName, tileDrawingFunctions) { ... }
+function drawTopSequenceRow(sequenceArray) { ... }
+function drawBottomSelectorRow(correctAnswer) { ... }
+function loadRandomGameLevel() { ... }
+
 let score = 0;
 let currentLevel = 1;
 
