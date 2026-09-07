@@ -1,17 +1,21 @@
 // Initialize KAPLAY canvas
+// 1. Initialize the canvas with correct background brackets
 kaplay({
-    background: [16, 24, 48], // Dark blue background color array
+    background:, 
     width: 800,
     height: 600,
 })
-// Load the engine's built-in asset bundle automatically
+
+// 2. Load the built-in assets so "bean" works natively
 loadBean()
+
+// 3. Use direct image URLs ending in .png so the shapes load properly
 loadSprite("apple", "https://kaplayjs.com")
 loadSprite("heart", "https://kaplayjs.com")
 loadSprite("coin", "https://kaplayjs.com")
 
-const shapes = ["apple", "heart", "coin", "bean",]
-// Swap your custom names out for the built-in bean variant configurations
+// 4. Now your combined shapes array will function perfectly!
+const shapes = ["apple", "heart", "coin", "bean"]
 
 let pattern = []
 let targetShape = ""
