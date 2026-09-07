@@ -123,6 +123,7 @@ function loadPresetPuzzle(tileBlueprint) {
     ]);
 
     // ==================== RENDERING BOTTOM ROW (4 SELECTORS) ====================
+  // ==================== RENDERING BOTTOM ROW (4 SELECTORS) ====================
     destroyAll("bottom-selector-tile");
 
     // Mix up the 4 options so the answer isn't always the first button
@@ -141,21 +142,22 @@ function loadPresetPuzzle(tileBlueprint) {
             "bottom-selector-tile"
         ]);
 
-      btn.onClick(() => {
-    if (spriteName === correctAnswer) {
-        burp(); 
-        score += 10;
-        scoreLabel.text = `Score: ${score}`;
-        
-        // CRITICAL UPDATE: Advance to the next level index explicitly!
-        currentLevelIndex++; 
-        
-        // Execute the updated progression handler block
-        loadHandCraftedLevel(); 
-    } else {
-        shake(10); 
-    }
-});
+        btn.onClick(() => {
+            if (spriteName === correctAnswer) {
+                burp(); 
+                score += 10;
+                scoreLabel.text = `Score: ${score}`;
+                
+                // CRITICAL UPDATE: Advance to the next level index explicitly!
+                currentLevelIndex++; 
+                
+                // Execute the updated progression handler block
+                loadHandCraftedLevel(); 
+            } else {
+                shake(10); 
+            }
+        });
+    });
 
 /**
  * Controller to pick a layout blueprint variant array out of your pool
