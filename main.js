@@ -158,4 +158,59 @@ function loadRandomGameLevel() {
     const selectedLayout = choose(masterLevelPool);
     loadPresetPuzzle(selectedLayout);
 }
+// =========================================================================
+// ADDED: THE TEXTURE GENERATION ENGINE
+// =========================================================================
+/**
+ * Draws your custom tile sheets into memory and registers them with KAPLAY
+ */
+function generateTileTheme(themeName, tileDrawingFunctions) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
+    // 7 tiles wide (448px) x 1 tile high (64px)
+    canvas.width = 448;
+    canvas.height = 64;
+
+    const BORDER_COLOR = "#ffffff";
+    const BORDER_WIDTH = 4;
+
+    let atlasSlices = {};
+
+    tileDrawingFunctions.forEach((drawGraphic, index) => {
+        const startX = index * 64;
+        const nameKey = `${themeName}_tile_${index}`;
+
+        // Draw individual tile border box
+        ctx.strokeStyle = BORDER_COLOR; 
+        ctx.lineWidth = BORDER_WIDTH;
+        ctx.strokeRect(startX + BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+
+        // Execute your custom drawing code inside this tile slot box
+        ctx.save();
+        ctx.translate(startX, 0); 
+        drawGraphic(ctx);
+        ctx.restore();
+
+        atlasSlices[nameKey] = { x: startX, y: 0, width: 64, height: 64 };
+    });
+
+    // Make sure frame_tile is registered for your question mark mystery block
+    atlasSlices["frame_tile"] = { x: 0, y: 0, width: 64, height: 64 };
+    
+    // Upload the canvas texture bundle into the game engine
+    loadSpriteAtlas(canvas.toDataURL(), atlasSlices);
+}
+
+// =========================================================================
+// RUN ENGINE & TRIGGER THE INITIAL LEVEL
+// =========================================================================
+
+// 1. Generate your geometric shape canvas tile assets (Creates "geo_tile_0", etc.)
+generateTileTheme("geo", geometricTheme);
+
+// 2. Generate your domino pip canvas tile assets (Creates "domino_tile_0", etc.)
+generateTileTheme("domino", dominoTheme);
+
+// 3. Kick off the level selector to pick a puzzle from masterLevelPool and display it!
+loadRandomGameLevel();
