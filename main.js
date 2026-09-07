@@ -200,5 +200,7 @@ function loadRandomGameLevel() {
 }
 
 // --- START UP ENGINES ---
-generateTileTheme("domino", dominoTheme);
+// geometricTheme
+// generateTileTheme("domino", dominoTheme);
+generateTileTheme("geometric", geometricTheme);
 loadRandomGameLevel();
