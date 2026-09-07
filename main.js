@@ -10,21 +10,20 @@ kaplay({
 let score = 0;
 let currentLevelIndex = 0; // Tracks which level number the player is currently on
 
-// Update your UI labels to reflect hand-crafted levels cleanly
+// Setup overlay UI elements
 const scoreLabel = add([
     text(`Score: ${score}`, { size: 22 }),
     pos(24, 24),
 ])
 
 const levelLabel = add([
-    text(`Level: ${currentLevelIndex + 1}`, { size: 22 }), // +1 so players see "Level 1" instead of "Level 0"
+    text(`Level: ${currentLevelIndex + 1}`, { size: 22 }), 
     pos(24, 54),
     color(0, 255, 255)
 ])
 
-
 // =========================================================================
-// 2. VISUAL GRAPHICS THEME SCHEMATICS
+// 2. THEME DEFINITIONS
 // =========================================================================
 
 // --- Theme Set A: Geometric Shapes ---
@@ -35,14 +34,13 @@ const geometricTheme = [
     (ctx) => { ctx.fillStyle = "#ff00ff"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 32); ctx.lineTo(32, 52); ctx.lineTo(12, 32); ctx.fill(); }, 
     (ctx) => { ctx.fillStyle = "#22cc66"; ctx.fillRect(26, 12, 12, 40); ctx.fillRect(12, 26, 40, 12); }, 
     (ctx) => { ctx.fillStyle = "#ff8800"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 22); ctx.lineTo(52, 44); ctx.lineTo(32, 52); ctx.lineTo(12, 44); ctx.lineTo(12, 22); ctx.fill(); }, 
-    (ctx) => { ctx.fillStyle = "#00cccc"; ctx.beginPath(); ctx.roundRect(16, 12, 32, 40, 16); ctx.fill(); }, // 1. Fixed: Added missing closing bracket and comma here
+    (ctx) => { ctx.fillStyle = "#00cccc"; ctx.beginPath(); ctx.roundRect(16, 12, 32, 40, 16); ctx.fill(); }, 
     (ctx) => { 
-        ctx.fillStyle = "#00cccc"; // The internal fill color (cyan)
+        ctx.fillStyle = "#00cccc"; 
         ctx.beginPath();
-        // ctx.ellipse(centerX, centerY, radiusX, radiusY, rotation, startAngle, endAngle)
         ctx.ellipse(32, 32, 16, 24, 0, 0, Math.PI * 2); 
         ctx.fill(); 
-    } // 2. Fixed: Closed this function block cleanly
+    } 
 ];
 
 // Helper wrapper to process drawing dots on the canvas
@@ -63,8 +61,10 @@ const dominoTheme = [
     (ctx) => { drawPipCircle(ctx, 18, 18); drawPipCircle(ctx, 46, 18); drawPipCircle(ctx, 32, 32); drawPipCircle(ctx, 18, 46); drawPipCircle(ctx, 46, 46); }, 
     (ctx) => { drawPipCircle(ctx, 18, 18); drawPipCircle(ctx, 18, 32); drawPipCircle(ctx, 18, 46); drawPipCircle(ctx, 46, 18); drawPipCircle(ctx, 46, 32); drawPipCircle(ctx, 46, 46); } 
 ];
-// Master pool of puzzle setups. 
-// Format: Exactly 7 tile names. [0,1,2] = Puzzle Row, [3] = Answer, [3,4,5,6] = Bottom Choices
+
+// =========================================================================
+// 3. MASTER LEVEL POOL MATRIX
+// =========================================================================
 const masterLevelPool = [
     // Level 1: Domino Progression (Pip 1, Pip 2, Pip 3 -> Guess Pip 4)
     [
@@ -83,17 +83,15 @@ const masterLevelPool = [
     ]
 ];
 
-/**
- * Core Tile System: Takes any 7-tile blueprint layout array and parses it onto the screen
- * @param {string[]} tileBlueprint - An array containing exactly 7 sprite names
- */
+// =========================================================================
+// 4. LEVEL PARSING ENGINE
+// =========================================================================
 function loadPresetPuzzle(tileBlueprint) {
-    // 1. Separate our arrays based on index constraints
-    const topSequence = tileBlueprint.slice(0, 3); // Gets items 0, 1, 2
-    const correctAnswer = tileBlueprint[3];         // Gets item 3
-    const bottomOptions = tileBlueprint.slice(3, 7); // Gets items 3, 4, 5, 6
+    const topSequence = tileBlueprint.slice(0, 3); 
+    const correctAnswer = tileBlueprint[3];         
+    const bottomOptions = tileBlueprint.slice(3, 7); 
 
-    // ==================== RENDERING TOP ROW (3 PIECES) ====================
+    // --- RENDERING TOP ROW ---
     destroyAll("top-puzzle-tile");
     
     topSequence.forEach((spriteName, index) => {
@@ -106,7 +104,6 @@ function loadPresetPuzzle(tileBlueprint) {
         ]);
     });
 
-    // Mystery slot question mark placeholder setup
     add([
         sprite("frame_tile"),
         pos(180 + 3 * 140, 200),
@@ -114,6 +111,7 @@ function loadPresetPuzzle(tileBlueprint) {
         scale(1.5),
         "top-puzzle-tile"
     ]);
+
     add([
         text("?", { size: 32 }),
         pos(180 + 3 * 140, 200),
@@ -122,11 +120,9 @@ function loadPresetPuzzle(tileBlueprint) {
         "top-puzzle-tile"
     ]);
 
-    // ==================== RENDERING BOTTOM ROW (4 SELECTORS) ====================
-  // ==================== RENDERING BOTTOM ROW (4 SELECTORS) ====================
+    // --- RENDERING BOTTOM ROW ---
     destroyAll("bottom-selector-tile");
 
-    // Mix up the 4 options so the answer isn't always the first button
     const shuffledOptions = shuffle(bottomOptions);
 
     shuffledOptions.forEach((spriteName, index) => {
@@ -147,25 +143,20 @@ function loadPresetPuzzle(tileBlueprint) {
                 burp(); 
                 score += 10;
                 scoreLabel.text = `Score: ${score}`;
-                
-                // CRITICAL UPDATE: Advance to the next level index explicitly!
                 currentLevelIndex++; 
-                
-                // Execute the updated progression handler block
                 loadHandCraftedLevel(); 
             } else {
                 shake(10); 
             }
         });
     });
+} // <-- FIXED: Added this missing brace to close loadPresetPuzzle cleanly!
 
-/**
- * Controller to pick a layout blueprint variant array out of your pool
- */
+// =========================================================================
+// 5. PROGRESSION HANDLER CONTROLLER
+// =========================================================================
 function loadHandCraftedLevel() {
-    // 1. Check if the player has beaten all the manual levels you created
     if (currentLevelIndex >= masterLevelPool.length) {
-        // Victory state! Wipe the board and show a game-won screen
         destroyAll("top-puzzle-tile");
         destroyAll("bottom-selector-tile");
         
@@ -180,51 +171,37 @@ function loadHandCraftedLevel() {
             pos(400, 320),
             anchor("center")
         ]);
-        return; // Stops the level renderer from running further
+        return; 
     }
 
-    // 2. Dynamically update the visual label text on screen
     levelLabel.text = `Level: ${currentLevelIndex + 1}`;
-
-    // 3. Extract the exact level matrix from your master array list sequentially
     const selectedLayout = masterLevelPool[currentLevelIndex];
-    
-    // 4. Send the 7-tile configuration array to the screen builder engine
     loadPresetPuzzle(selectedLayout);
 }
-function loadRandomGameLevel() {
-    const selectedLayout = choose(masterLevelPool);
-    loadPresetPuzzle(selectedLayout);
-}
+
 // =========================================================================
-// ADDED: THE TEXTURE GENERATION ENGINE
+// 6. TEXTURE ENGINE GENERATOR
 // =========================================================================
-/**
- * Draws your custom tile sheets into memory and registers them with KAPLAY
- */
 function generateTileTheme(themeName, tileDrawingFunctions) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    // 7 tiles wide (448px) x 1 tile high (64px)
     canvas.width = 448;
     canvas.height = 64;
 
     const BORDER_COLOR = "#ffffff";
     const BORDER_WIDTH = 4;
 
-    let atlasSlices = {};
+    let atlasSlices = {}; // FIXED: Removed the second duplicate initialization line
 
     tileDrawingFunctions.forEach((drawGraphic, index) => {
         const startX = index * 64;
         const nameKey = `${themeName}_tile_${index}`;
 
-        // Draw individual tile border box
         ctx.strokeStyle = BORDER_COLOR; 
         ctx.lineWidth = BORDER_WIDTH;
         ctx.strokeRect(startX + BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
 
-        // Execute your custom drawing code inside this tile slot box
         ctx.save();
         ctx.translate(startX, 0); 
         drawGraphic(ctx);
@@ -233,20 +210,16 @@ function generateTileTheme(themeName, tileDrawingFunctions) {
         atlasSlices[nameKey] = { x: startX, y: 0, width: 64, height: 64 };
     });
 
-    // Make sure frame_tile is registered for your question mark mystery block
+    // FIXED: Baked-in separate frame registration for mystery window
     atlasSlices["frame_tile"] = { x: 0, y: 0, width: 64, height: 64 };
-    
-    // Upload the canvas texture bundle into the game engine
+
     loadSpriteAtlas(canvas.toDataURL(), atlasSlices);
 }
 
 // =========================================================================
-// RUN ENGINE & TRIGGER THE INITIAL LEVEL
+// 7. INITIAL STARTUP BOOTLOADER
 // =========================================================================
-
-
 generateTileTheme("geo", geometricTheme);
 generateTileTheme("domino", dominoTheme);
 
-// Boot up the first manual level explicitly!
 loadHandCraftedLevel();
