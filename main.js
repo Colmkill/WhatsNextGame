@@ -219,7 +219,7 @@ const masterLevelPool = [
     ],
     [
         "letter_tile_5", "letter_tile_14", "letter_tile_17", 
-        "letter_tile_9", "letter_tile_23", "letter_tile_11", "letter_tile_19"
+        "letter_tile_19", "letter_tile_23", "letter_tile_11", "letter_tile_18"
     ]
 ];
 
