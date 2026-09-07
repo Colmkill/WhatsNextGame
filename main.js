@@ -2,7 +2,7 @@
 // 1. INITIALIZE ENGINE CANVAS
 // =========================================================================
 kaplay({
-    background:, // Dark blue background color array
+    background:"#1a1a3a",, // Dark blue background color array
     width: 800,
     height: 600,
 })
