@@ -1,10 +1,9 @@
 // Initialize KAPLAY canvas
 kaplay({
-    background:, // Dark blue background
+    background: [16, 24, 48], // Dark blue background color array
     width: 800,
     height: 600,
 })
-
 // Game State variables
 const shapes = ["apple", "heart", "coin"]
 let pattern = []
