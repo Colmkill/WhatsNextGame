@@ -80,6 +80,18 @@ const masterLevelPool = [
     [
         "geo_tile_4", "geo_tile_5", "geo_tile_4", 
         "geo_tile_5", "geo_tile_6", "domino_tile_2", "domino_tile_1"
+    ], // <-- Make sure there is a comma here to separate the levels!
+    
+    // Level 4: The Oval Launch (Oval, Square, Oval -> Guess Square)
+    [
+        "geo_tile_7", "geo_tile_1", "geo_tile_7",
+        "geo_tile_1", "geo_tile_0", "geo_tile_3", "geo_tile_5"
+    ],
+    
+    // Level 5: High-Pip Domino Race (Pip 4, Pip 5, Pip 6 -> Guess Pip 3? No, progressive down!)
+    [
+        "domino_tile_6", "domino_tile_5", "domino_tile_4",
+        "domino_tile_3", "domino_tile_0", "domino_tile_1", "domino_tile_2"
     ]
 ];
 
