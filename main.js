@@ -139,6 +139,15 @@ const masterLevelPool = [
     [
         "domino_tile_6", "domino_tile_5", "domino_tile_4",
         "domino_tile_3", "domino_tile_0", "domino_tile_1", "domino_tile_2"
+    ],
+     [
+        "card_tile_1", "card_tile_2", "card_tile_3", 
+        "card_tile_4", "card_tile_0", "card_tile_5", "card_tile_9"
+    ],
+    // New Level 5: Skip Count Sequence Pattern Challenge (2, 4, 6 -> Guess Card 8)
+    [
+        "card_tile_2", "card_tile_4", "card_tile_6", 
+        "card_tile_8", "card_tile_3", "card_tile_5", "card_tile_7"
     ]
 ];
 
