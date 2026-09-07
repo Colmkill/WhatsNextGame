@@ -107,6 +107,62 @@ const cardTheme = [
     (ctx) => { drawBaseCard(ctx, "8"); }, // Index 8 -> "card_tile_8"
     (ctx) => { drawBaseCard(ctx, "9"); }  // Index 9 -> "card_tile_9"
 ];
+
+// =========================================================================
+// 1. HELPER ALPHABET FUNCTION (Kept safely outside the array)
+// =========================================================================
+function drawLetterTile(ctx, character) {
+    // 1. Draw a wooden/plastic letter block background (inset slightly by 4px)
+    ctx.fillStyle = "#f5d0a1"; // Light tan/birch wood colour
+    ctx.beginPath();
+    ctx.roundRect(4, 4, 56, 56, 8); // Smooth rounded square
+    ctx.fill();
+
+    // 2. Draw a dark wood inner carving indentation frame
+    ctx.strokeStyle = "#c69c6d";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(8, 8, 48, 48);
+
+    // 3. Render the bold letter value centered cleanly on the block face
+    ctx.fillStyle = "#4a3319"; // Deep brown letter carving colour
+    ctx.font = "bold 32px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(character.toUpperCase(), 32, 33);
+}
+
+// =========================================================================
+// 2. THEME SET D: ALPHABET LETTERS (A to Z)
+// =========================================================================
+const alphabetTheme = [
+    // Registers inside your system dynamically as "letter_tile_0" through "letter_tile_25"
+    (ctx) => { drawLetterTile(ctx, "a"); }, // Index 0 -> "letter_tile_0"
+    (ctx) => { drawLetterTile(ctx, "b"); }, // Index 1 -> "letter_tile_1"
+    (ctx) => { drawLetterTile(ctx, "c"); }, // Index 2 -> "letter_tile_2"
+    (ctx) => { drawLetterTile(ctx, "d"); }, // Index 3 -> "letter_tile_3"
+    (ctx) => { drawLetterTile(ctx, "e"); }, // Index 4 -> "letter_tile_4"
+    (ctx) => { drawLetterTile(ctx, "f"); }, // Index 5 -> "letter_tile_5"
+    (ctx) => { drawLetterTile(ctx, "g"); }, // Index 6 -> "letter_tile_6"
+    (ctx) => { drawLetterTile(ctx, "h"); }, // Index 7 -> "letter_tile_7"
+    (ctx) => { drawLetterTile(ctx, "i"); }, // Index 8 -> "letter_tile_8"
+    (ctx) => { drawLetterTile(ctx, "j"); }, // Index 9 -> "letter_tile_9"
+    (ctx) => { drawLetterTile(ctx, "k"); }, // Index 10 -> "letter_tile_10"
+    (ctx) => { drawLetterTile(ctx, "l"); }, // Index 11 -> "letter_tile_11"
+    (ctx) => { drawLetterTile(ctx, "m"); }, // Index 12 -> "letter_tile_12"
+    (ctx) => { drawLetterTile(ctx, "n"); }, // Index 13 -> "letter_tile_13"
+    (ctx) => { drawLetterTile(ctx, "o"); }, // Index 14 -> "letter_tile_14"
+    (ctx) => { drawLetterTile(ctx, "p"); }, // Index 15 -> "letter_tile_15"
+    (ctx) => { drawLetterTile(ctx, "q"); }, // Index 16 -> "letter_tile_16"
+    (ctx) => { drawLetterTile(ctx, "r"); }, // Index 17 -> "letter_tile_17"
+    (ctx) => { drawLetterTile(ctx, "s"); }, // Index 18 -> "letter_tile_18"
+    (ctx) => { drawLetterTile(ctx, "t"); }, // Index 19 -> "letter_tile_19"
+    (ctx) => { drawLetterTile(ctx, "u"); }, // Index 20 -> "letter_tile_20"
+    (ctx) => { drawLetterTile(ctx, "v"); }, // Index 21 -> "letter_tile_21"
+    (ctx) => { drawLetterTile(ctx, "w"); }, // Index 22 -> "letter_tile_22"
+    (ctx) => { drawLetterTile(ctx, "x"); }, // Index 23 -> "letter_tile_23"
+    (ctx) => { drawLetterTile(ctx, "y"); }, // Index 24 -> "letter_tile_24"
+    (ctx) => { drawLetterTile(ctx, "z"); }  // Index 25 -> "letter_tile_25"
+];
 // =========================================================================
 // 3. MASTER LEVEL POOL MATRIX
 // =========================================================================
@@ -150,6 +206,16 @@ const masterLevelPool = [
     [
         "card_tile_2", "card_tile_4", "card_tile_6", 
         "card_tile_8", "card_tile_3", "card_tile_5", "card_tile_7"
+    ],
+        // New Level: Spell a simple pattern (C, A, T -> Guess T? No, spell CAT twice: C, A, T -> Guess C)
+    [
+        "letter_tile_2", "letter_tile_0", "letter_tile_19", 
+        "letter_tile_2", "letter_tile_4", "letter_tile_14", "letter_tile_24"
+    ],
+    // New Level: Alphabetical ordering progression (A, B, C -> Guess D)
+    [
+        "letter_tile_0", "letter_tile_1", "letter_tile_2", 
+        "letter_tile_3", "letter_tile_23", "letter_tile_11", "letter_tile_7"
     ]
 ];
 
@@ -306,4 +372,5 @@ function generateTileTheme(themeName, tileDrawingFunctions) {
 generateTileTheme("geo", geometricTheme);
 generateTileTheme("domino", dominoTheme);
 generateTileTheme("card", cardTheme); 
+generateTileTheme("letter", alphabetTheme);
 loadHandCraftedLevel();
