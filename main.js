@@ -6,41 +6,84 @@ kaplay({
     height: 600,
 })
 
-// 1. Set up a virtual drawing canvas in memory
+// 1. Create a larger virtual grid canvas (4 columns wide x 2 rows high)
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 
-// Make it wide enough to hold two 64x64 tiles side-by-side (128x64 total)
-canvas.width = 128;
-canvas.height = 64;
+// Each tile is 64x64. 4 tiles wide = 256px. 2 tiles high = 128px.
+canvas.width = 256;
+canvas.height = 128;
 
-// --- DRAW TILE 1: Triangle Tile ---
-ctx.fillStyle = "#ffcc00"; // Yellow color
+// ==================== ROW 1 (Y = 0) ====================
+
+// Tile 1: Red Circle (X: 0, Y: 0)
+ctx.fillStyle = "#ff5555";
+ctx.beginPath(); ctx.arc(32, 32, 24, 0, Math.PI * 2); ctx.fill();
+
+// Tile 2: Blue Square (X: 64, Y: 0)
+ctx.fillStyle = "#5555ff";
+ctx.fillRect(64 + 8, 8, 48, 48);
+
+// Tile 3: Yellow Triangle (X: 128, Y: 0)
+ctx.fillStyle = "#ffcc00";
 ctx.beginPath();
-ctx.moveTo(32, 8);   // Top point
-ctx.lineTo(56, 56);  // Bottom right
-ctx.lineTo(8, 56);   // Bottom left
-ctx.closePath();
-ctx.fill();
+ctx.moveTo(128 + 32, 8); ctx.lineTo(128 + 56, 56); ctx.lineTo(128 + 8, 56);
+ctx.closePath(); ctx.fill();
 
-// --- DRAW TILE 2: Diamond Tile ---
-ctx.fillStyle = "#ff00ff"; // Magenta color
+// Tile 4: Magenta Diamond (X: 192, Y: 0)
+ctx.fillStyle = "#ff00ff";
 ctx.beginPath();
-ctx.moveTo(64 + 32, 8);  // Top point (shifted right by 64px)
-ctx.lineTo(64 + 56, 32); // Right point
-ctx.lineTo(64 + 32, 56); // Bottom point
-ctx.lineTo(64 + 8, 32);  // Left point
-ctx.closePath();
-ctx.fill();
+ctx.moveTo(192 + 32, 8); ctx.lineTo(192 + 56, 32); ctx.lineTo(192 + 32, 56); ctx.lineTo(192 + 8, 32);
+ctx.closePath(); ctx.fill();
 
-// 2. Register your digital drawings as game assets in KAPLAY
+
+// ==================== ROW 2 (Y = 64) ====================
+
+// Tile 5: Green Star / Cross (X: 0, Y: 64)
+ctx.fillStyle = "#22cc66";
+ctx.fillRect(24, 64 + 8, 16, 48);
+ctx.fillRect(8, 64 + 24, 48, 16);
+
+// Tile 6: Orange Hexagon (X: 64, Y: 64)
+ctx.fillStyle = "#ff8800";
+ctx.beginPath();
+ctx.moveTo(64 + 32, 64 + 8);  ctx.lineTo(64 + 56, 64 + 20); ctx.lineTo(64 + 56, 64 + 44);
+ctx.lineTo(64 + 32, 64 + 56); ctx.lineTo(64 + 8, 64 + 44);  ctx.lineTo(64 + 8, 64 + 20);
+ctx.closePath(); ctx.fill();
+
+// Tile 7: Cyan Capsule / Oval (X: 128, Y: 64)
+ctx.fillStyle = "#00cccc";
+ctx.beginPath(); ctx.roundRect(128 + 12, 64 + 8, 40, 48, 20); ctx.fill();
+
+// Tile 8: Purple Border Box (X: 192, Y: 64)
+ctx.strokeStyle = "#aa55ff";
+ctx.lineWidth = 6;
+ctx.strokeRect(192 + 12, 64 + 12, 40, 40);
+
+
+// 2. Register all 8 slice locations from the 2x4 grid sheet
 loadSpriteAtlas(canvas.toDataURL(), {
-    "triangle_tile": { x: 0, y: 0, width: 64, height: 64 },
-    "diamond_tile": { x: 64, y: 0, width: 64, height: 64 },
+    "circly_tile":   { x: 0,   y: 0,  width: 64, height: 64 },
+    "square_tile":   { x: 64,  y: 0,  width: 64, height: 64 },
+    "triangle_tile": { x: 128, y: 0,  width: 64, height: 64 },
+    "diamond_tile":  { x: 192, y: 0,  width: 64, height: 64 },
+    "star_tile":     { x: 0,   y: 64, width: 64, height: 64 },
+    "hex_tile":      { x: 64,  y: 64, width: 64, height: 64 },
+    "oval_tile":     { x: 128, y: 64, width: 64, height: 64 },
+    "frame_tile":    { x: 192, y: 64, width: 64, height: 64 },
 });
 
-// 3. Drop them straight into your active game list!
-const shapes = ["triangle_tile", "diamond_tile",];
+// 3. Set up your shapes array using your custom coded tiles!
+const shapes = [
+    "circly_tile", 
+    "square_tile", 
+    "triangle_tile", 
+    "diamond_tile",
+    "star_tile", 
+    "hex_tile", 
+    "oval_tile", 
+    "frame_tile"
+];
 
 
 let pattern = []
