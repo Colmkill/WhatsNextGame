@@ -163,6 +163,43 @@ const alphabetTheme = [
     (ctx) => { drawLetterTile(ctx, "y"); }, // Index 24 -> "letter_tile_24"
     (ctx) => { drawLetterTile(ctx, "z"); }  // Index 25 -> "letter_tile_25"
 ];
+
+// =========================================================================
+// 1. HELPER ANIMAL FUNCTION (Kept safely outside the array)
+// =========================================================================
+function drawAnimalTile(ctx, emojiChar) {
+    // 1. Draw a soft green/jungle background tile (inset slightly by 4px)
+    ctx.fillStyle = "#e2f0d9"; 
+    ctx.beginPath();
+    ctx.roundRect(4, 4, 56, 56, 8); 
+    ctx.fill();
+
+    // 2. Draw a dark green accent inner border frame
+    ctx.strokeStyle = "#385723";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(8, 8, 48, 48);
+
+    // 3. Render the animal emoji centered cleanly on the block face
+    ctx.font = "36px sans-serif"; // Large font size to fill the card beautifully
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(emojiChar, 32, 33);
+}
+
+// =========================================================================
+// 2. THEME SET E: ANIMAL PICTURE TILES (7 Assets)
+// =========================================================================
+const animalTheme = [
+    // Registers inside your system dynamically as "animal_tile_0" through "animal_tile_6"
+    (ctx) => { drawAnimalTile(ctx, "🦁"); }, // Index 0 -> "animal_tile_0" (Lion)
+    (ctx) => { drawAnimalTile(ctx, "🐯"); }, // Index 1 -> "animal_tile_1" (Tiger)
+    (ctx) => { drawAnimalTile(ctx, "🐻"); }, // Index 2 -> "animal_tile_2" (Bear)
+    (ctx) => { drawAnimalTile(ctx, "🐼"); }, // Index 3 -> "animal_tile_3" (Panda)
+    (ctx) => { drawAnimalTile(ctx, "🦊"); }, // Index 4 -> "animal_tile_4" (Fox)
+    (ctx) => { drawAnimalTile(ctx, "🐸"); }, // Index 5 -> "animal_tile_5" (Frog)
+    (ctx) => { drawAnimalTile(ctx, "🐵"); }  // Index 6 -> "animal_tile_6" (Monkey)
+];
+
 // =========================================================================
 // 3. MASTER LEVEL POOL MATRIX
 // =========================================================================
@@ -172,6 +209,7 @@ const masterLevelPool = [
         "domino_tile_1", "domino_tile_2", "domino_tile_3", 
         "domino_tile_4", "domino_tile_0", "domino_tile_5", "domino_tile_6"
     ],
+     
     // Level 2: Geometry Alternating (Circle, Square, Circle -> Guess Square)
     [
         "geo_tile_0", "geo_tile_1", "geo_tile_0", 
@@ -192,6 +230,13 @@ const masterLevelPool = [
         "geo_tile_7", "geo_tile_1", "geo_tile_7",
         "geo_tile_1", "geo_tile_0", "geo_tile_3", "geo_tile_5"
     ],
+        // New Level: Lion, Tiger, Lion -> Guess Tiger! (Using slots 0 and 1)
+    [
+        "animal_tile_0", "animal_tile_1", "animal_tile_0", 
+        "animal_tile_1", // <-- The winning tile setup position
+        "animal_tile_3", "animal_tile_4", "animal_tile_5"
+    ],
+
     
     // Level 5: High-Pip Domino Race (Pip 4, Pip 5, Pip 6 -> Guess Pip 3? No, progressive down!)
     [
@@ -381,4 +426,5 @@ generateTileTheme("geo", geometricTheme);
 generateTileTheme("domino", dominoTheme);
 generateTileTheme("card", cardTheme); 
 generateTileTheme("letter", alphabetTheme);
+generateTileTheme("animal", animalTheme); 
 loadHandCraftedLevel();
