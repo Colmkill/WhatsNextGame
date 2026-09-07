@@ -58,62 +58,40 @@ const dominoTheme = [
     (ctx) => { drawPipCircle(ctx, 18, 18); drawPipCircle(ctx, 46, 18); drawPipCircle(ctx, 32, 32); drawPipCircle(ctx, 18, 46); drawPipCircle(ctx, 46, 46); }, 
     (ctx) => { drawPipCircle(ctx, 18, 18); drawPipCircle(ctx, 18, 32); drawPipCircle(ctx, 18, 46); drawPipCircle(ctx, 46, 18); drawPipCircle(ctx, 46, 32); drawPipCircle(ctx, 46, 46); } 
 ];
+// Master pool of puzzle setups. 
+// Format: Exactly 7 tile names. [0,1,2] = Puzzle Row, [3] = Answer, [3,4,5,6] = Bottom Choices
+const masterLevelPool = [
+    // Level 1: Domino Progression (Pip 1, Pip 2, Pip 3 -> Guess Pip 4)
+    [
+        "domino_tile_1", "domino_tile_2", "domino_tile_3", 
+        "domino_tile_4", "domino_tile_0", "domino_tile_5", "domino_tile_6"
+    ],
+    // Level 2: Geometry Alternating (Circle, Square, Circle -> Guess Square)
+    [
+        "geo_tile_0", "geo_tile_1", "geo_tile_0", 
+        "geo_tile_1", "geo_tile_2", "geo_tile_3", "geo_tile_4"
+    ],
+    // Level 3: Mixed Challenge (Cross, Hex, Cross -> Guess Hex)
+    [
+        "geo_tile_4", "geo_tile_5", "geo_tile_4", 
+        "geo_tile_5", "geo_tile_6", "domino_tile_2", "domino_tile_1"
+    ]
+];
 
-// =========================================================================
-// 3. CORE SPRITE LAYER MAP GENERATOR
-// =========================================================================
-function generateTileTheme(themeName, tileDrawingFunctions) {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+/**
+ * Core Tile System: Takes any 7-tile blueprint layout array and parses it onto the screen
+ * @param {string[]} tileBlueprint - An array containing exactly 7 sprite names
+ */
+function loadPresetPuzzle(tileBlueprint) {
+    // 1. Separate our arrays based on index constraints
+    const topSequence = tileBlueprint.slice(0, 3); // Gets items 0, 1, 2
+    const correctAnswer = tileBlueprint[3];         // Gets item 3
+    const bottomOptions = tileBlueprint.slice(3, 7); // Gets items 3, 4, 5, 6
 
-    canvas.width = 448;
-    canvas.height = 64;
-
-    const BORDER_COLOR = "#ffffff";
-    const BORDER_WIDTH = 4;
-
-    allShapes = [];
-    let atlasSlices = {};
-
-    tileDrawingFunctions.forEach((drawGraphic, index) => {
-        const startX = index * 64;
-        const nameKey = `${themeName}_tile_${index}`;
-
-        ctx.strokeStyle = BORDER_COLOR; 
-        ctx.lineWidth = BORDER_WIDTH;
-        ctx.strokeRect(startX + BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
-
-        ctx.save();
-        ctx.translate(startX, 0); 
-        drawGraphic(ctx);
-        ctx.restore();
-
-        allShapes.push(nameKey);
-        atlasSlices[nameKey] = { x: startX, y: 0, width: 64, height: 64 };
-    });
-
-    atlasSlices["frame_tile"] = { x: 0, y: 0, width: 64, height: 64 };
-    loadSpriteAtlas(canvas.toDataURL(), atlasSlices);
-
-    generatePuzzlePatterns();
-}
-
-function generatePuzzlePatterns() {
-    // Dynamic difficulty blueprints mapped using relative array values
-    levelPool = [
-        { sequence: [allShapes[0], allShapes[1], allShapes[0]], answer: allShapes[1] },
-        { sequence: [allShapes[2], allShapes[3], allShapes[3]], answer: allShapes[2] },
-        { sequence: [allShapes[4], allShapes[5], allShapes[6]], answer: allShapes[5] }
-    ];
-}
-
-// =========================================================================
-// 4. DISPLAY LAYER DRAW ROUTINES
-// =========================================================================
-function drawTopSequenceRow(sequenceArray) {
+    // ==================== RENDERING TOP ROW (3 PIECES) ====================
     destroyAll("top-puzzle-tile");
-
-    sequenceArray.forEach((spriteName, index) => {
+    
+    topSequence.forEach((spriteName, index) => {
         add([
             sprite(spriteName),
             pos(180 + index * 140, 200),
@@ -123,6 +101,7 @@ function drawTopSequenceRow(sequenceArray) {
         ]);
     });
 
+    // Mystery slot question mark placeholder setup
     add([
         sprite("frame_tile"),
         pos(180 + 3 * 140, 200),
@@ -130,7 +109,6 @@ function drawTopSequenceRow(sequenceArray) {
         scale(1.5),
         "top-puzzle-tile"
     ]);
-
     add([
         text("?", { size: 32 }),
         pos(180 + 3 * 140, 200),
@@ -138,21 +116,14 @@ function drawTopSequenceRow(sequenceArray) {
         color(255, 255, 0),
         "top-puzzle-tile"
     ]);
-}
 
-function drawBottomSelectorRow(correctAnswer) {
+    // ==================== RENDERING BOTTOM ROW (4 SELECTORS) ====================
     destroyAll("bottom-selector-tile");
 
-    const decoyPool = allShapes.filter(shape => shape !== correctAnswer);
-    
-    let choicesSet = new Set([correctAnswer]);
-    while (choicesSet.size < 4) {
-        choicesSet.add(choose(decoyPool));
-    }
+    // Mix up the 4 options so the answer isn't always the first button
+    const shuffledOptions = shuffle(bottomOptions);
 
-    const randomizedChoices = shuffle(Array.from(choicesSet));
-
-    randomizedChoices.forEach((spriteName, index) => {
+    shuffledOptions.forEach((spriteName, index) => {
         const btnX = 145 + index * 170;
         const btnY = 460;
 
@@ -167,40 +138,24 @@ function drawBottomSelectorRow(correctAnswer) {
 
         btn.onClick(() => {
             if (spriteName === correctAnswer) {
-                burp(); 
+                burp(); // Winning chime audio track
                 score += 10;
                 scoreLabel.text = `Score: ${score}`;
+                
+                // Fetch another random 7-tile master layout blueprint block
                 loadRandomGameLevel(); 
             } else {
-                shake(10); 
+                shake(10); // Shake scene camera bounds on invalid choice
             }
         });
     });
 }
 
-// =========================================================================
-// 5. DIFFICULTY SCALE LEVEL LOADER & INITIALIZATION
-// =========================================================================
+/**
+ * Controller to pick a layout blueprint variant array out of your pool
+ */
 function loadRandomGameLevel() {
-    if (score >= 80) {
-        currentLevel = 3;
-    } else if (score >= 40) {
-        currentLevel = 2;
-    } else {
-        currentLevel = 1;
-    }
-
-    levelLabel.text = `Level: ${currentLevel}`;
-
-    // Gracefully handle picking the active sequence rules safely
-    let activeLevel = choose(levelPool);
-    
-    drawTopSequenceRow(activeLevel.sequence);
-    drawBottomSelectorRow(activeLevel.answer);
+    const selectedLayout = choose(masterLevelPool);
+    loadPresetPuzzle(selectedLayout);
 }
 
-// --- START UP ENGINES ---
-// geometricTheme
-// generateTileTheme("domino", dominoTheme);
-generateTileTheme("geometric", geometricTheme);
-loadRandomGameLevel();
