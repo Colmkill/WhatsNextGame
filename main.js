@@ -6,9 +6,13 @@ kaplay({
 })
 // Load the engine's built-in asset bundle automatically
 loadBean()
+loadSprite("apple", "https://kaplayjs.com")
+loadSprite("heart", "https://kaplayjs.com")
+loadSprite("coin", "https://kaplayjs.com")
 
+const shapes = ["apple", "heart", "coin", "bean",]
 // Swap your custom names out for the built-in bean variant configurations
-const shapes = ["bean"] 
+
 let pattern = []
 let targetShape = ""
 let score = 0
