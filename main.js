@@ -201,6 +201,63 @@ const animalTheme = [
 ];
 
 // =========================================================================
+// 1. DYNAMIC REPETITIVE PATTERNS THEME (4 Unique Styles)
+// =========================================================================
+const patternedTheme = [
+    // [Index 0] -> "pattern_tile_0": Horizontal Stripes (Candy Cane Style)
+    (ctx) => {
+        // Base fill
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(4, 4, 56, 56);
+        // Draw recurring horizontal lines
+        ctx.fillStyle = "#ff4444";
+        for (let y = 8; y < 60; y += 12) {
+            ctx.fillRect(4, y, 56, 4); // x, y, width, height
+        }
+    },
+
+    // [Index 1] -> "pattern_tile_1": Polka Dots / Polka Tile
+    (ctx) => {
+        ctx.fillStyle = "#ffcc00"; // Yellow background
+        ctx.fillRect(4, 4, 56, 56);
+        ctx.fillStyle = "#ffffff"; // White dots
+        // Loop grid to space dots out evenly
+        for (let x = 16; x < 60; x += 32) {
+            for (let y = 16; y < 60; y += 32) {
+                ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+    },
+
+    // [Index 2] -> "pattern_tile_2": Chequerboard Tile
+    (ctx) => {
+        ctx.fillStyle = "#444444"; // Dark squares base
+        ctx.fillRect(4, 4, 56, 56);
+        ctx.fillStyle = "#ffffff"; // Light squares layer
+        const size = 14; // Quarter sizing divider block
+        for (let row = 0; row < 4; row++) {
+            for (let col = 0; col < 4; col++) {
+                if ((row + col) % 2 === 0) {
+                    ctx.fillRect(4 + col * size, 4 + row * size, size, size);
+                }
+            }
+        }
+    },
+
+    // [Index 3] -> "pattern_tile_3": Concentric Target Rings
+    (ctx) => {
+        ctx.fillStyle = "#00cccc"; // Cyan background base
+        ctx.fillRect(4, 4, 56, 56);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 4;
+        
+        ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(32, 32, 10, 0, Math.PI * 2); ctx.stroke();
+    }
+];
+
+
+// =========================================================================
 // 3. MASTER LEVEL POOL MATRIX
 // =========================================================================
 const masterLevelPool = [
@@ -262,6 +319,13 @@ const masterLevelPool = [
         "letter_tile_0", "letter_tile_1", "letter_tile_2", 
         "letter_tile_3", "letter_tile_23", "letter_tile_11", "letter_tile_7"
     ],
+    
+     [
+        "pattern_tile_0", "pattern_tile_1", "pattern_tile_0", 
+        "pattern_tile_1", // <-- Correct answer mapping slot index position
+        "pattern_tile_2", "pattern_tile_3", "geo_tile_1"
+    ],
+    
     [
         "letter_tile_5", "letter_tile_14", "letter_tile_17", 
         "letter_tile_19", "letter_tile_23", "letter_tile_11", "letter_tile_18"
@@ -427,4 +491,5 @@ generateTileTheme("domino", dominoTheme);
 generateTileTheme("card", cardTheme); 
 generateTileTheme("letter", alphabetTheme);
 generateTileTheme("animal", animalTheme); 
+generateTileTheme("pattern", patternedTheme);
 loadHandCraftedLevel();
