@@ -10,99 +10,102 @@ kaplay({
 // =========================================================================
 // 2. 2x4 CUSTOM TILE GRAPHICS GENERATOR (With Baked-In Borders)
 // =========================================================================
-const canvas = document.createElement("canvas");
-const ctx = canvas.getContext("2d");
+// Global tracking arrays
+let allShapes = [];
+let levelPool = [];
 
-canvas.width = 256;
-canvas.height = 128;
+/**
+ * Generates an entirely fresh 7-tile sprite sheet asset in memory based on a chosen theme style.
+ * @param {string} themeName - The naming prefix (e.g. "domino", "geo")
+ * @param {Function[]} tileDrawingFunctions - An array of exactly 7 canvas drawing instructions.
+ */
+function generateTileTheme(themeName, tileDrawingFunctions) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
-// Set up your outline border style parameters
-const BORDER_COLOR = "#ffffff"; // White tile outline (change to #000000 for black)
-const BORDER_WIDTH = 4;        // Thickness of your tile outline borders
+    // 7 tiles wide (448px) x 1 tile high (64px)
+    canvas.width = 448;
+    canvas.height = 64;
 
-// --- ROW 1 (Y = 0) ---
-// Tile 1: Red Circle (X: 0, Y: 0)
-ctx.fillStyle = "#ff5555";
-ctx.beginPath(); ctx.arc(32, 32, 24, 0, Math.PI * 2); ctx.fill();
-// Outlined border box
-ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
-ctx.strokeRect(BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+    const BORDER_COLOR = "#ffffff";
+    const BORDER_WIDTH = 4;
 
-// Tile 2: Blue Square (X: 64, Y: 0)
-ctx.fillStyle = "#5555ff";
-ctx.fillRect(64 + 8, 8, 48, 48);
-// Outlined border box
-ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
-ctx.strokeRect(64 + BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+    // Reset our game asset lists
+    allShapes = [];
+    let atlasSlices = {};
 
-// Tile 3: Yellow Triangle (X: 128, Y: 0)
-ctx.fillStyle = "#ffcc00";
-ctx.beginPath();
-ctx.moveTo(128 + 32, 8); ctx.lineTo(128 + 56, 56); ctx.lineTo(128 + 8, 56);
-ctx.closePath(); ctx.fill();
-// Outlined border box
-ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
-ctx.strokeRect(128 + BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+    // Loop through and draw each of the 7 tiles side-by-side
+    tileDrawingFunctions.forEach((drawGraphic, index) => {
+        const startX = index * 64;
+        const nameKey = `${themeName}_tile_${index}`;
 
-// Tile 4: Magenta Diamond (X: 192, Y: 0)
-ctx.fillStyle = "#ff00ff";
-ctx.beginPath();
-ctx.moveTo(192 + 32, 8); ctx.lineTo(192 + 56, 32); ctx.lineTo(192 + 32, 56); ctx.lineTo(192 + 8, 32);
-ctx.closePath(); ctx.fill();
-// Outlined border box
-ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
-ctx.strokeRect(192 + BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+        // 1. Draw the common tile outline box envelope
+        ctx.strokeStyle = BORDER_COLOR; 
+        ctx.lineWidth = BORDER_WIDTH;
+        ctx.strokeRect(startX + BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
 
+        // 2. Execute the unique custom graphic code inside this box slot boundary
+        ctx.save();
+        ctx.translate(startX, 0); // Shifts drawing context so (0,0) is the start of this specific tile
+        drawGraphic(ctx);
+        ctx.restore();
 
-// --- ROW 2 (Y = 64) ---
-// Tile 5: Green Star / Cross (X: 0, Y: 64)
-ctx.fillStyle = "#22cc66";
-ctx.fillRect(24, 64 + 8, 16, 48);
-ctx.fillRect(8, 64 + 24, 48, 16);
-// Outlined border box
-ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
-ctx.strokeRect(BORDER_WIDTH/2, 64 + BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+        // 3. Register slice definitions mapping data
+        allShapes.push(nameKey);
+        atlasSlices[nameKey] = { x: startX, y: 0, width: 64, height: 64 };
+    });
 
-// Tile 6: Orange Hexagon (X: 64, Y: 64)
-ctx.fillStyle = "#ff8800";
-ctx.beginPath();
-ctx.moveTo(64 + 32, 64 + 8);  ctx.lineTo(64 + 56, 64 + 20); ctx.lineTo(64 + 56, 64 + 44);
-ctx.lineTo(64 + 32, 64 + 56); ctx.lineTo(64 + 8, 64 + 44);  ctx.lineTo(64 + 8, 64 + 20);
-ctx.closePath(); ctx.fill();
-// Outlined border box
-ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
-ctx.strokeRect(64 + BORDER_WIDTH/2, 64 + BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+    // Register frame tile outline separately for the mystery question mark block
+    atlasSlices["frame_tile"] = { x: 0, y: 0, width: 64, height: 64 };
 
-// Tile 7: Cyan Capsule / Oval (X: 128, Y: 64)
-ctx.fillStyle = "#00cccc";
-ctx.beginPath(); ctx.roundRect(128 + 12, 64 + 8, 40, 48, 20); ctx.fill();
-// Outlined border box
-ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
-ctx.strokeRect(128 + BORDER_WIDTH/2, 64 + BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+    // Register everything to KAPLAY
+    loadSpriteAtlas(canvas.toDataURL(), atlasSlices);
 
-// Tile 8: Purple Border Box / Frame (X: 192, Y: 64)
-ctx.strokeStyle = "#aa55ff";
-ctx.lineWidth = 6;
-ctx.strokeRect(192 + 12, 64 + 12, 40, 40);
-// Outlined border box
-ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
-ctx.strokeRect(192 + BORDER_WIDTH/2, 64 + BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
+    // 4. Automatically generate the puzzle pools using your newly mapped tiles
+    generatePuzzlePatterns();
+}
 
-// Register slice bounds as assets inside KAPLAY
-loadSpriteAtlas(canvas.toDataURL(), {
-    "circly_tile":   { x: 0,   y: 0,  width: 64, height: 64 },
-    "square_tile":   { x: 64,  y: 0,  width: 64, height: 64 },
-    "triangle_tile": { x: 128, y: 0,  width: 64, height: 64 },
-    "diamond_tile":  { x: 192, y: 0,  width: 64, height: 64 },
-    "star_tile":     { x: 0,   y: 64, width: 64, height: 64 },
-    "hex_tile":      { x: 64,  y: 64, width: 64, height: 64 },
-    "oval_tile":     { x: 128, y: 64, width: 64, height: 64 },
-    "frame_tile":    { x: 192, y: 64, width: 64, height: 64 },
-});
-// Master index array matching the loaded assets
-const allShapes = [
-    "circly_tile", "square_tile", "triangle_tile", "diamond_tile",
-    "star_tile", "hex_tile", "oval_tile", "frame_tile"
+/**
+ * Creates logical progression structures using whatever shapes are active in allShapes.
+ */
+function generatePuzzlePatterns() {
+    // Rebuild puzzle blueprints based on the new allShapes index mappings
+    levelPool = [
+        // Pattern 1: Alternating (0, 1, 0 -> Guess 1)
+        { sequence: [allShapes[0], allShapes[1], allShapes[0]], answer: allShapes[1] },
+        // Pattern 2: Sandwich (2, 3, 3 -> Guess 2)
+        { sequence: [allShapes[2], allShapes[3], allShapes[3]], answer: allShapes[2] },
+        // Pattern 3: Line Progressive (4, 5, 6 -> Guess 5)
+        { sequence: [allShapes[4], allShapes[5], allShapes[6]], answer: allShapes[5] }
+    ];
+}
+// =========================================================================
+// THEME DEF_POOL A: GEOMETRIC SHAPES (7 TILES)
+// =========================================================================
+const geometricTheme = [
+    (ctx) => { ctx.fillStyle = "#ff5555"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Circle
+    (ctx) => { ctx.fillStyle = "#5555ff"; ctx.fillRect(12, 12, 40, 40); }, // Square
+    (ctx) => { ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 52); ctx.lineTo(12, 52); ctx.fill(); }, // Triangle
+    (ctx) => { ctx.fillStyle = "#ff00ff"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 32); ctx.lineTo(32, 52); ctx.lineTo(12, 32); ctx.fill(); }, // Diamond
+    (ctx) => { ctx.fillStyle = "#22cc66"; ctx.fillRect(26, 12, 12, 40); ctx.fillRect(12, 26, 40, 12); }, // Cross
+    (ctx) => { ctx.fillStyle = "#ff8800"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 22); ctx.lineTo(52, 44); ctx.lineTo(32, 52); ctx.lineTo(12, 44); ctx.lineTo(12, 22); ctx.fill(); }, // Hex
+    (ctx) => { ctx.fillStyle = "#00cccc"; ctx.beginPath(); ctx.roundRect(16, 12, 32, 40, 16); ctx.fill(); } // Oval
+];
+
+// =========================================================================
+// THEME DEF_POOL B: DOMINO PIP STYLES (7 TILES: Pip 0 to Pip 6)
+// =========================================================================
+const dominoTheme = [
+    // Helper tool to quickly draw a pip dot on the canvas
+    function drawPip(ctx, x, y) { ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); };
+
+    (ctx) => { /* Blank Domino (0) */ },
+    (ctx) => { drawPip(ctx, 32, 32); }, // 1 Dot
+    (ctx) => { drawPip(ctx, 18, 18); drawPip(ctx, 46, 46); }, // 2 Dots
+    (ctx) => { drawPip(ctx, 18, 18); drawPip(ctx, 32, 32); drawPip(ctx, 46, 46); }, // 3 Dots
+    (ctx) => { drawPip(ctx, 18, 18); drawPip(ctx, 46, 18); drawPip(ctx, 18, 46); drawPip(ctx, 46, 46); }, // 4 Dots
+    (ctx) => { drawPip(ctx, 18, 18); drawPip(ctx, 46, 18); drawPip(ctx, 32, 32); drawPip(ctx, 18, 46); drawPip(ctx, 46, 46); }, // 5 Dots
+    (ctx) => { drawPip(ctx, 18, 18); drawPip(ctx, 18, 32); drawPip(ctx, 18, 46); drawPip(ctx, 46, 18); drawPip(ctx, 46, 32); drawPip(ctx, 46, 46); } // 6 Dots
 ];
 // =========================================================================
 // 3. GAME STATE & SEPARATED LEVEL POOLS
