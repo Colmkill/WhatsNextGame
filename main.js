@@ -88,7 +88,22 @@ ctx.strokeRect(192 + 12, 64 + 12, 40, 40);
 ctx.strokeStyle = BORDER_COLOR; ctx.lineWidth = BORDER_WIDTH;
 ctx.strokeRect(192 + BORDER_WIDTH/2, 64 + BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
 
-
+// Register slice bounds as assets inside KAPLAY
+loadSpriteAtlas(canvas.toDataURL(), {
+    "circly_tile":   { x: 0,   y: 0,  width: 64, height: 64 },
+    "square_tile":   { x: 64,  y: 0,  width: 64, height: 64 },
+    "triangle_tile": { x: 128, y: 0,  width: 64, height: 64 },
+    "diamond_tile":  { x: 192, y: 0,  width: 64, height: 64 },
+    "star_tile":     { x: 0,   y: 64, width: 64, height: 64 },
+    "hex_tile":      { x: 64,  y: 64, width: 64, height: 64 },
+    "oval_tile":     { x: 128, y: 64, width: 64, height: 64 },
+    "frame_tile":    { x: 192, y: 64, width: 64, height: 64 },
+});
+// Master index array matching the loaded assets
+const allShapes = [
+    "circly_tile", "square_tile", "triangle_tile", "diamond_tile",
+    "star_tile", "hex_tile", "oval_tile", "frame_tile"
+];
 // =========================================================================
 // 3. GAME STATE & PATTERN BLUEPRINTS
 // =========================================================================
