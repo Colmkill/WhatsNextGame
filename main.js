@@ -38,6 +38,12 @@ const geometricTheme = [
     (ctx) => { ctx.fillStyle = "#22cc66"; ctx.fillRect(26, 12, 12, 40); ctx.fillRect(12, 26, 40, 12); }, 
     (ctx) => { ctx.fillStyle = "#ff8800"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 22); ctx.lineTo(52, 44); ctx.lineTo(32, 52); ctx.lineTo(12, 44); ctx.lineTo(12, 22); ctx.fill(); }, 
     (ctx) => { ctx.fillStyle = "#00cccc"; ctx.beginPath(); ctx.roundRect(16, 12, 32, 40, 16); ctx.fill(); } 
+    (ctx) => { ctx.fillStyle = "#00cccc"; // The internal fill color (cyan)
+    ctx.beginPath();
+    // ctx.ellipse(centerX, centerY, radiusX, radiusY, rotation, startAngle, endAngle)
+    ctx.ellipse(32, 32, 16, 24, 0, 0, Math.PI * 2); 
+    ctx.fill(); 
+}
 ];
 
 // Helper wrapper to process drawing dots on the canvas
