@@ -8,11 +8,35 @@ kaplay({
 
 // 2. Load the built-in assets so "bean" works natively
 loadBean()
+// 1. Create a virtual canvas to draw your custom tiles
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
+
+// Set the canvas size to hold two 64x64 pixel tiles side-by-side (128x64 total)
+canvas.width = 128;
+canvas.height = 64;
+
+// --- DRAW TILE 1: Circly Tile (A red circle inside a tile) ---
+ctx.fillStyle = "#ff5555"; // Circle color
+ctx.beginPath();
+ctx.arc(32, 32, 24, 0, Math.PI * 2); // Draw circle centered at (32, 32)
+ctx.fill();
+
+// --- DRAW TILE 2: Square Tile (A blue square tile) ---
+ctx.fillStyle = "#5555ff"; // Square color
+ctx.fillRect(64 + 8, 8, 48, 48); // Draw square shifted to the second slot
+
+// 2. Turn your code drawings into actual game sprites
+loadSpriteAtlas(canvas.toDataURL(), {
+    "circly_tile": { x: 0, y: 0, width: 64, height: 64 },
+    "square_tile": { x: 64, y: 0, width: 64, height: 64 },
+});
+
+// 3. Add your new tiles directly to your shapes list!
+const shapes = ["circly_tile", "square_tile", "bean"];
 
 
 
-// 4. Now your combined shapes array will function perfectly!
-const shapes = [ "bean"]
 
 let pattern = []
 let targetShape = ""
