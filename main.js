@@ -76,6 +76,10 @@ const masterLevelPool = [
         "geo_tile_0", "geo_tile_1", "geo_tile_0", 
         "geo_tile_1", "geo_tile_2", "geo_tile_3", "geo_tile_4"
     ],
+    [
+        "geo_tile_0", "geo_tile_7", "geo_tile_0", 
+        "geo_tile_1", "geo_tile_2", "geo_tile_3", "geo_tile_4"
+    ],
     // Level 3: Mixed Challenge (Cross, Hex, Cross -> Guess Hex)
     [
         "geo_tile_4", "geo_tile_5", "geo_tile_4", 
