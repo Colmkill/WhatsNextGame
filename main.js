@@ -156,6 +156,13 @@ const masterLevelPool = [
 // =========================================================================
 // 4. LEVEL PARSING ENGINE
 // =========================================================================
+
+function drawDefaultFrame(ctx) {
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(2, 2, 60, 60); // A clean, empty white bounding outline
+}
+
 function loadPresetPuzzle(tileBlueprint) {
     const topSequence = tileBlueprint.slice(0, 3); 
     const correctAnswer = tileBlueprint[3];         
@@ -174,14 +181,17 @@ function loadPresetPuzzle(tileBlueprint) {
         ]);
     });
 
+     // --- REPLACED SPRITE WITH A NATIVE RECTANGLE ---
     add([
-        sprite("frame_tile"),
+        rect(96, 96, { radius: 8 }), // 1.5 scale of 64x64 is 96x96 pixels
         pos(180 + 3 * 140, 200),
+        color(40, 40, 80),        // Give it a permanent dark blue/grey backing
+        outline(4, "#ffffff"),    // Give it a crisp white border outline
         anchor("center"),
-        scale(1.5),
         "top-puzzle-tile"
     ]);
 
+    // Keep your text question mark exactly the same
     add([
         text("?", { size: 32 }),
         pos(180 + 3 * 140, 200),
