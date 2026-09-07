@@ -142,8 +142,83 @@ const poolLevel3 = [
     { sequence: ["star_tile", "hex_tile", "oval_tile"], answer: "frame_tile" },
     { sequence: ["frame_tile", "oval_tile", "hex_tile"], answer: "star_tile" },
 ];
+// =========================================================================
+// 4. TOP ROW RENDERING (Sequence Viewer)
+// =========================================================================
+function drawTopSequenceRow(sequenceArray) {
+    destroyAll("top-puzzle-tile");
 
+    // Loop through the 3 pattern puzzle tiles
+    sequenceArray.forEach((spriteName, index) => {
+        add([
+            sprite(spriteName),
+            pos(180 + index * 140, 200),
+            anchor("center"),
+            scale(1.5),
+            "top-puzzle-tile"
+        ]);
+    });
 
+    // Draw the fourth mystery outline question mark tile
+    add([
+        sprite("frame_tile"),
+        pos(180 + 3 * 140, 200),
+        anchor("center"),
+        scale(1.5),
+        "top-puzzle-tile"
+    ]);
+    add([
+        text("?", { size: 32 }),
+        pos(180 + 3 * 140, 200),
+        anchor("center"),
+        color(255, 255, 0),
+        "top-puzzle-tile"
+    ]);
+}
+// =========================================================================
+// 5. BOTTOM ROW RENDERING (Dynamic Choice Option Sorter)
+// =========================================================================
+function drawBottomSelectorRow(correctAnswer) {
+    destroyAll("bottom-selector-tile");
+
+    // Filter out the winning item to pull bad options safely from leftovers
+    const decoyPool = allShapes.filter(shape => shape !== correctAnswer);
+    
+    // Assemble exactly 4 unique choices using a JavaScript Set
+    let choicesSet = new Set([correctAnswer]);
+    while (choicesSet.size < 4) {
+        choicesSet.add(choose(decoyPool));
+    }
+
+    // Shuffle tile arrays to avoid predictable patterns
+    const randomizedChoices = shuffle(Array.from(choicesSet));
+
+    // Render option triggers side-by-side
+    randomizedChoices.forEach((spriteName, index) => {
+        const btnX = 145 + index * 170;
+        const btnY = 460;
+
+        const btn = add([
+            sprite(spriteName), 
+            pos(btnX, btnY),
+            anchor("center"),
+            scale(1.5),
+            area(),
+            "bottom-selector-tile"
+        ]);
+
+        btn.onClick(() => {
+            if (spriteName === correctAnswer) {
+                burp(); // Standard built-in engine win notification audio clip
+                score += 10;
+                scoreLabel.text = `Score: ${score}`;
+                loadRandomGameLevel(); // Proceed seamlessly
+            } else {
+                shake(10); // Shake scene camera bounds on mistake
+            }
+        });
+    });
+}
 // =========================================================================
 // 6. GAME INITIALIZATION & DIFFICULTY CONTROLLER
 // =========================================================================
