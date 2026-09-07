@@ -6,36 +6,41 @@ kaplay({
     height: 600,
 })
 
-// 2. Load the built-in assets so "bean" works natively
-loadBean()
-// 1. Create a virtual canvas to draw your custom tiles
+// 1. Set up a virtual drawing canvas in memory
 const canvas = document.createElement("canvas");
 const ctx = canvas.getContext("2d");
 
-// Set the canvas size to hold two 64x64 pixel tiles side-by-side (128x64 total)
+// Make it wide enough to hold two 64x64 tiles side-by-side (128x64 total)
 canvas.width = 128;
 canvas.height = 64;
 
-// --- DRAW TILE 1: Circly Tile (A red circle inside a tile) ---
-ctx.fillStyle = "#ff5555"; // Circle color
+// --- DRAW TILE 1: Triangle Tile ---
+ctx.fillStyle = "#ffcc00"; // Yellow color
 ctx.beginPath();
-ctx.arc(32, 32, 24, 0, Math.PI * 2); // Draw circle centered at (32, 32)
+ctx.moveTo(32, 8);   // Top point
+ctx.lineTo(56, 56);  // Bottom right
+ctx.lineTo(8, 56);   // Bottom left
+ctx.closePath();
 ctx.fill();
 
-// --- DRAW TILE 2: Square Tile (A blue square tile) ---
-ctx.fillStyle = "#5555ff"; // Square color
-ctx.fillRect(64 + 8, 8, 48, 48); // Draw square shifted to the second slot
+// --- DRAW TILE 2: Diamond Tile ---
+ctx.fillStyle = "#ff00ff"; // Magenta color
+ctx.beginPath();
+ctx.moveTo(64 + 32, 8);  // Top point (shifted right by 64px)
+ctx.lineTo(64 + 56, 32); // Right point
+ctx.lineTo(64 + 32, 56); // Bottom point
+ctx.lineTo(64 + 8, 32);  // Left point
+ctx.closePath();
+ctx.fill();
 
-// 2. Turn your code drawings into actual game sprites
+// 2. Register your digital drawings as game assets in KAPLAY
 loadSpriteAtlas(canvas.toDataURL(), {
-    "circly_tile": { x: 0, y: 0, width: 64, height: 64 },
-    "square_tile": { x: 64, y: 0, width: 64, height: 64 },
+    "triangle_tile": { x: 0, y: 0, width: 64, height: 64 },
+    "diamond_tile": { x: 64, y: 0, width: 64, height: 64 },
 });
 
-// 3. Add your new tiles directly to your shapes list!
-const shapes = ["circly_tile", "square_tile", "bean"];
-
-
+// 3. Drop them straight into your active game list!
+const shapes = ["triangle_tile", "diamond_tile",];
 
 
 let pattern = []
