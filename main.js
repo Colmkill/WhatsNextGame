@@ -226,18 +226,21 @@ function generateTileTheme(themeName, tileDrawingFunctions) {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    canvas.width = 448;
+    // FIXED: Calculate canvas width dynamically based on the total items in the array!
+    const totalTiles = tileDrawingFunctions.length;
+    canvas.width = totalTiles * 64; 
     canvas.height = 64;
 
     const BORDER_COLOR = "#ffffff";
     const BORDER_WIDTH = 4;
 
-    let atlasSlices = {}; // FIXED: Removed the second duplicate initialization line
+    let atlasSlices = {};
 
     tileDrawingFunctions.forEach((drawGraphic, index) => {
         const startX = index * 64;
         const nameKey = `${themeName}_tile_${index}`;
 
+        // Draw individual tile border box
         ctx.strokeStyle = BORDER_COLOR; 
         ctx.lineWidth = BORDER_WIDTH;
         ctx.strokeRect(startX + BORDER_WIDTH/2, BORDER_WIDTH/2, 64 - BORDER_WIDTH, 64 - BORDER_WIDTH);
@@ -250,9 +253,10 @@ function generateTileTheme(themeName, tileDrawingFunctions) {
         atlasSlices[nameKey] = { x: startX, y: 0, width: 64, height: 64 };
     });
 
-    // FIXED: Baked-in separate frame registration for mystery window
+    // Make sure frame_tile is registered for your question mark mystery block
     atlasSlices["frame_tile"] = { x: 0, y: 0, width: 64, height: 64 };
-
+    
+    // Upload the canvas texture bundle into the game engine
     loadSpriteAtlas(canvas.toDataURL(), atlasSlices);
 }
 
