@@ -7,23 +7,21 @@ kaplay({
     height: 600,
 })
 
-// Global tracking state pointers
-let allShapes = [];
-let levelPool = [];
 let score = 0;
-let currentLevel = 1;
+let currentLevelIndex = 0; // Tracks which level number the player is currently on
 
-// Setup score & level overlay text UI elements
+// Update your UI labels to reflect hand-crafted levels cleanly
 const scoreLabel = add([
     text(`Score: ${score}`, { size: 22 }),
     pos(24, 24),
 ])
 
 const levelLabel = add([
-    text(`Level: ${currentLevel}`, { size: 22 }),
+    text(`Level: ${currentLevelIndex + 1}`, { size: 22 }), // +1 so players see "Level 1" instead of "Level 0"
     pos(24, 54),
     color(0, 255, 255)
 ])
+
 
 // =========================================================================
 // 2. VISUAL GRAPHICS THEME SCHEMATICS
@@ -143,24 +141,55 @@ function loadPresetPuzzle(tileBlueprint) {
             "bottom-selector-tile"
         ]);
 
-        btn.onClick(() => {
-            if (spriteName === correctAnswer) {
-                burp(); // Winning chime audio track
-                score += 10;
-                scoreLabel.text = `Score: ${score}`;
-                
-                // Fetch another random 7-tile master layout blueprint block
-                loadRandomGameLevel(); 
-            } else {
-                shake(10); // Shake scene camera bounds on invalid choice
-            }
-        });
-    });
-}
+      btn.onClick(() => {
+    if (spriteName === correctAnswer) {
+        burp(); 
+        score += 10;
+        scoreLabel.text = `Score: ${score}`;
+        
+        // CRITICAL UPDATE: Advance to the next level index explicitly!
+        currentLevelIndex++; 
+        
+        // Execute the updated progression handler block
+        loadHandCraftedLevel(); 
+    } else {
+        shake(10); 
+    }
+});
 
 /**
  * Controller to pick a layout blueprint variant array out of your pool
  */
+function loadHandCraftedLevel() {
+    // 1. Check if the player has beaten all the manual levels you created
+    if (currentLevelIndex >= masterLevelPool.length) {
+        // Victory state! Wipe the board and show a game-won screen
+        destroyAll("top-puzzle-tile");
+        destroyAll("bottom-selector-tile");
+        
+        add([
+            text("YOU WIN!", { size: 48 }),
+            pos(400, 250),
+            anchor("center"),
+            color(0, 255, 0)
+        ]);
+        add([
+            text(`Final Score: ${score}`, { size: 24 }),
+            pos(400, 320),
+            anchor("center")
+        ]);
+        return; // Stops the level renderer from running further
+    }
+
+    // 2. Dynamically update the visual label text on screen
+    levelLabel.text = `Level: ${currentLevelIndex + 1}`;
+
+    // 3. Extract the exact level matrix from your master array list sequentially
+    const selectedLayout = masterLevelPool[currentLevelIndex];
+    
+    // 4. Send the 7-tile configuration array to the screen builder engine
+    loadPresetPuzzle(selectedLayout);
+}
 function loadRandomGameLevel() {
     const selectedLayout = choose(masterLevelPool);
     loadPresetPuzzle(selectedLayout);
@@ -213,11 +242,9 @@ function generateTileTheme(themeName, tileDrawingFunctions) {
 // RUN ENGINE & TRIGGER THE INITIAL LEVEL
 // =========================================================================
 
-// 1. Generate your geometric shape canvas tile assets (Creates "geo_tile_0", etc.)
-generateTileTheme("geo", geometricTheme);
 
-// 2. Generate your domino pip canvas tile assets (Creates "domino_tile_0", etc.)
+generateTileTheme("geo", geometricTheme);
 generateTileTheme("domino", dominoTheme);
 
-// 3. Kick off the level selector to pick a puzzle from masterLevelPool and display it!
-loadRandomGameLevel();
+// Boot up the first manual level explicitly!
+loadHandCraftedLevel();
