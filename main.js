@@ -105,108 +105,79 @@ const allShapes = [
     "star_tile", "hex_tile", "oval_tile", "frame_tile"
 ];
 // =========================================================================
-// 3. GAME STATE & PATTERN BLUEPRINTS
+// 3. GAME STATE & SEPARATED LEVEL POOLS
 // =========================================================================
 let score = 0;
+let currentLevel = 1;
 
-// Setup score overlay graphic UI
+// Setup score & level overlay graphic UI labels
 const scoreLabel = add([
-    text(`Score: ${score}`, { size: 24 }),
+    text(`Score: ${score}`, { size: 22 }),
     pos(24, 24),
 ])
 
-// Pattern Blueprints: Customize, modify, or add items here freely!
-const levelPool = [
+const levelLabel = add([
+    text(`Level: ${currentLevel}`, { size: 22 }),
+    pos(24, 54),
+    color(0, 255, 255)
+])
+
+// --- LEVEL 1 POOL: Simple Alternating (A, B, A -> B) ---
+const poolLevel1 = [
     { sequence: ["circly_tile", "square_tile", "circly_tile"], answer: "square_tile" },
     { sequence: ["triangle_tile", "diamond_tile", "triangle_tile"], answer: "diamond_tile" },
-    { sequence: ["star_tile", "oval_tile", "star_tile"], answer: "oval_tile" },
-    { sequence: ["hex_tile", "frame_tile", "hex_tile"], answer: "frame_tile" }
+    { sequence: ["star_tile", "hex_tile", "star_tile"], answer: "hex_tile" },
 ];
 
-// =========================================================================
-// 4. TOP ROW RENDERING (Sequence Viewer)
-// =========================================================================
-function drawTopSequenceRow(sequenceArray) {
-    destroyAll("top-puzzle-tile");
+// --- LEVEL 2 POOL: Mirror Sandwich (A, B, B -> A) ---
+const poolLevel2 = [
+    { sequence: ["circly_tile", "square_tile", "square_tile"], answer: "circly_tile" },
+    { sequence: ["triangle_tile", "oval_tile", "oval_tile"], answer: "triangle_tile" },
+    { sequence: ["frame_tile", "hex_tile", "hex_tile"], answer: "frame_tile" },
+];
 
-    // Loop through the 3 pattern puzzle tiles
-    sequenceArray.forEach((spriteName, index) => {
-        add([
-            sprite(spriteName),
-            pos(180 + index * 140, 200),
-            anchor("center"),
-            scale(1.5),
-            "top-puzzle-tile"
-        ]);
-    });
+// --- LEVEL 3 POOL: Progressive Line (A, B, C -> D) ---
+const poolLevel3 = [
+    { sequence: ["circly_tile", "square_tile", "triangle_tile"], answer: "diamond_tile" },
+    { sequence: ["star_tile", "hex_tile", "oval_tile"], answer: "frame_tile" },
+    { sequence: ["frame_tile", "oval_tile", "hex_tile"], answer: "star_tile" },
+];
 
-    // Draw the fourth mystery outline question mark tile
-    add([
-        sprite("frame_tile"),
-        pos(180 + 3 * 140, 200),
-        anchor("center"),
-        scale(1.5),
-        "top-puzzle-tile"
-    ]);
-    add([
-        text("?", { size: 32 }),
-        pos(180 + 3 * 140, 200),
-        anchor("center"),
-        color(255, 255, 0),
-        "top-puzzle-tile"
-    ]);
-}
 
 // =========================================================================
-// 5. BOTTOM ROW RENDERING (Dynamic Choice Option Sorter)
-// =========================================================================
-function drawBottomSelectorRow(correctAnswer) {
-    destroyAll("bottom-selector-tile");
-
-    // Filter out the winning item to pull bad options safely from leftovers
-    const decoyPool = allShapes.filter(shape => shape !== correctAnswer);
-    
-    // Assemble exactly 4 unique choices using a JavaScript Set
-    let choicesSet = new Set([correctAnswer]);
-    while (choicesSet.size < 4) {
-        choicesSet.add(choose(decoyPool));
-    }
-
-    // Shuffle tile arrays to avoid predictable patterns
-    const randomizedChoices = shuffle(Array.from(choicesSet));
-
-    // Render option triggers side-by-side
-    randomizedChoices.forEach((spriteName, index) => {
-        const btnX = 145 + index * 170;
-        const btnY = 460;
-
-        const btn = add([
-            sprite(spriteName), 
-            pos(btnX, btnY),
-            anchor("center"),
-            scale(1.5),
-            area(),
-            "bottom-selector-tile"
-        ]);
-
-        btn.onClick(() => {
-            if (spriteName === correctAnswer) {
-                burp(); // Standard built-in engine win notification audio clip
-                score += 10;
-                scoreLabel.text = `Score: ${score}`;
-                loadRandomGameLevel(); // Proceed seamlessly
-            } else {
-                shake(10); // Shake scene camera bounds on mistake
-            }
-        });
-    });
-}
-
-// =========================================================================
-// 6. GAME INITIALIZATION CONTROLLER
+// 6. GAME INITIALIZATION & DIFFICULTY CONTROLLER
 // =========================================================================
 function loadRandomGameLevel() {
-    const activeLevel = choose(levelPool);
+    // 1. Calculate difficulty scaling threshold milestones based on score
+    if (score >= 120) {
+        currentLevel = 4;
+    } else if (score >= 80) {
+        currentLevel = 3;
+    } else if (score >= 40) {
+        currentLevel = 2;
+    } else {
+        currentLevel = 1;
+    }
+
+    // Update screen UI text layer
+    levelLabel.text = `Level: ${currentLevel}`;
+
+    // 2. Select the correct puzzle pool based on the active level threshold
+    let activeLevel;
+
+    if (currentLevel === 1) {
+        activeLevel = choose(poolLevel1);
+    } else if (currentLevel === 2) {
+        activeLevel = choose(poolLevel2);
+    } else if (currentLevel === 3) {
+        activeLevel = choose(poolLevel3);
+    } else {
+        // Level 4 (Chaos Mode): Merges all pools together randomly
+        const fullChaosPool = [...poolLevel1, ...poolLevel2, ...poolLevel3];
+        activeLevel = choose(fullChaosPool);
+    }
+
+    // 3. Render the chosen pattern and options to screen
     drawTopSequenceRow(activeLevel.sequence);
     drawBottomSelectorRow(activeLevel.answer);
 }
