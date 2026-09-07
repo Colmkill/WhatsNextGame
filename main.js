@@ -259,6 +259,5 @@ function loadRandomGameLevel() {
     drawTopSequenceRow(activeLevel.sequence);
     drawBottomSelectorRow(activeLevel.answer);
 }
-
-// Kick off the first round of the game
+generateTileTheme("domino", dominoTheme);
 loadRandomGameLevel();
