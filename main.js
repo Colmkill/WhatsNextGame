@@ -4,8 +4,11 @@ kaplay({
     width: 800,
     height: 600,
 })
-// Game State variables
-const shapes = ["apple", "heart", "coin"]
+// Load the engine's built-in asset bundle automatically
+loadBean()
+
+// Swap your custom names out for the built-in bean variant configurations
+const shapes = ["bean"] 
 let pattern = []
 let targetShape = ""
 let score = 0
