@@ -68,7 +68,43 @@ const dominoTheme = [
     (ctx) => { drawPipCircle(ctx, 18, 18); drawPipCircle(ctx, 46, 18); drawPipCircle(ctx, 32, 32); drawPipCircle(ctx, 18, 46); drawPipCircle(ctx, 46, 46); }, 
     (ctx) => { drawPipCircle(ctx, 18, 18); drawPipCircle(ctx, 18, 32); drawPipCircle(ctx, 18, 46); drawPipCircle(ctx, 46, 18); drawPipCircle(ctx, 46, 32); drawPipCircle(ctx, 46, 46); } 
 ];
+// =========================================================================
+// THEME SET C: CARD STYLES (Numbers 0 to 9)
+// =========================================================================
+const cardTheme = [
+    // Helper tool to handle standard card backing, border margins, and text alignment setup
+    function drawBaseCard(ctx, textChar) {
+        // 1. Draw a white card background plate (inset slightly by 4px from the tile edge)
+        ctx.fillStyle = "#ffffff";
+        ctx.beginPath();
+        ctx.roundRect(4, 4, 56, 56, 6);
+        ctx.fill();
 
+        // 2. Draw a subtle grey inner card line border accent
+        ctx.strokeStyle = "#dddddd";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(8, 8, 48, 48);
+
+        // 3. Render the bold black character cleanly centered on the card deck face
+        ctx.fillStyle = "#111111";
+        ctx.font = "bold 26px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(textChar, 32, 33); // Offset slightly to account for font height baselines
+    };
+
+    // Mapped Assets (Will register inside your system as "card_tile_0" through "card_tile_9")
+    (ctx) => { drawBaseCard(ctx, "0"); }, // Index 0 -> "card_tile_0"
+    (ctx) => { drawBaseCard(ctx, "1"); }, // Index 1 -> "card_tile_1"
+    (ctx) => { drawBaseCard(ctx, "2"); }, // Index 2 -> "card_tile_2"
+    (ctx) => { drawBaseCard(ctx, "3"); }, // Index 3 -> "card_tile_3"
+    (ctx) => { drawBaseCard(ctx, "4"); }, // Index 4 -> "card_tile_4"
+    (ctx) => { drawBaseCard(ctx, "5"); }, // Index 5 -> "card_tile_5"
+    (ctx) => { drawBaseCard(ctx, "6"); }, // Index 6 -> "card_tile_6"
+    (ctx) => { drawBaseCard(ctx, "7"); }, // Index 7 -> "card_tile_7"
+    (ctx) => { drawBaseCard(ctx, "8"); }, // Index 8 -> "card_tile_8"
+    (ctx) => { drawBaseCard(ctx, "9"); }  // Index 9 -> "card_tile_9"
+];
 // =========================================================================
 // 3. MASTER LEVEL POOL MATRIX
 // =========================================================================
@@ -248,5 +284,5 @@ function generateTileTheme(themeName, tileDrawingFunctions) {
 // =========================================================================
 generateTileTheme("geo", geometricTheme);
 generateTileTheme("domino", dominoTheme);
-
+generateTileTheme("card", cardTheme); 
 loadHandCraftedLevel();
