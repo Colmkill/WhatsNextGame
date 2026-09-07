@@ -69,31 +69,33 @@ const dominoTheme = [
     (ctx) => { drawPipCircle(ctx, 18, 18); drawPipCircle(ctx, 18, 32); drawPipCircle(ctx, 18, 46); drawPipCircle(ctx, 46, 18); drawPipCircle(ctx, 46, 32); drawPipCircle(ctx, 46, 46); } 
 ];
 // =========================================================================
-// THEME SET C: CARD STYLES (Numbers 0 to 9)
+// 1. HELPER CARD FUNCTION (Kept safely outside the array)
+// =========================================================================
+function drawBaseCard(ctx, textChar) {
+    // 1. Draw a white card background plate (inset slightly by 4px from the tile edge)
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.roundRect(4, 4, 56, 56, 6);
+    ctx.fill();
+
+    // 2. Draw a subtle grey inner card line border accent
+    ctx.strokeStyle = "#dddddd";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(8, 8, 48, 48);
+
+    // 3. Render the bold black character cleanly centered on the card deck face
+    ctx.fillStyle = "#111111";
+    ctx.font = "bold 26px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(textChar, 32, 33); // Offset slightly to account for font height baselines
+}
+
+// =========================================================================
+// 2. THEME SET C: CARD STYLES (Numbers 0 to 9)
 // =========================================================================
 const cardTheme = [
-    // Helper tool to handle standard card backing, border margins, and text alignment setup
-    function drawBaseCard(ctx, textChar) {
-        // 1. Draw a white card background plate (inset slightly by 4px from the tile edge)
-        ctx.fillStyle = "#ffffff";
-        ctx.beginPath();
-        ctx.roundRect(4, 4, 56, 56, 6);
-        ctx.fill();
-
-        // 2. Draw a subtle grey inner card line border accent
-        ctx.strokeStyle = "#dddddd";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(8, 8, 48, 48);
-
-        // 3. Render the bold black character cleanly centered on the card deck face
-        ctx.fillStyle = "#111111";
-        ctx.font = "bold 26px sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(textChar, 32, 33); // Offset slightly to account for font height baselines
-    };
-
-    // Mapped Assets (Will register inside your system as "card_tile_0" through "card_tile_9")
+    // Every index now strictly holds a single valid tile drawing loop function
     (ctx) => { drawBaseCard(ctx, "0"); }, // Index 0 -> "card_tile_0"
     (ctx) => { drawBaseCard(ctx, "1"); }, // Index 1 -> "card_tile_1"
     (ctx) => { drawBaseCard(ctx, "2"); }, // Index 2 -> "card_tile_2"
