@@ -28,42 +28,25 @@ const levelLabel = add([
 
 // --- Theme Set A: Geometric Shapes ---
 const geometricTheme = [
-    // [Index 0] -> "geo_tile_0": Red Circle
-    // Draws a circular arc centered at (32, 32) with a 20px radius.
-    (ctx) => { ctx.fillStyle = "#ff5555"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, 
+    // ==================== ORIGINAL SHAPES (Index 0 - 7) ====================
+    /* [0] */ (ctx) => { ctx.fillStyle = "#ff5555"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Red Circle
+    /* [1] */ (ctx) => { ctx.fillStyle = "#5555ff"; ctx.fillRect(12, 12, 40, 40); },                                 // Blue Square
+    /* [2] */ (ctx) => { ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 52); ctx.lineTo(12, 52); ctx.fill(); }, // Triangle
+    /* [3] */ (ctx) => { ctx.fillStyle = "#ff00ff"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 32); ctx.lineTo(32, 52); ctx.lineTo(12, 32); ctx.fill(); }, // Diamond
+    /* [4] */ (ctx) => { ctx.fillStyle = "#22cc66"; ctx.fillRect(26, 12, 12, 40); ctx.fillRect(12, 26, 40, 12); }, // Cross
+    /* [5] */ (ctx) => { ctx.fillStyle = "#ff8800"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 22); ctx.lineTo(52, 44); ctx.lineTo(32, 52); ctx.lineTo(12, 44); ctx.lineTo(12, 22); ctx.fill(); }, // Hexagon
+    /* [6] */ (ctx) => { ctx.fillStyle = "#00cccc"; ctx.beginPath(); ctx.roundRect(16, 12, 32, 40, 16); ctx.fill(); }, // Capsule
+    /* [7] */ (ctx) => { ctx.fillStyle = "#00cccc"; ctx.beginPath(); ctx.ellipse(32, 32, 16, 24, 0, 0, Math.PI * 2); ctx.fill(); }, // Oval
 
-    // [Index 1] -> "geo_tile_1": Blue Square
-    // Draws a solid square starting 12px from the top-left edge, measuring 40x40px.
-    (ctx) => { ctx.fillStyle = "#5555ff"; ctx.fillRect(12, 12, 40, 40); }, 
-
-    // [Index 2] -> "geo_tile_2": Yellow Triangle
-    // Connects lines from top-centre (32,12) to bottom-right (52,52) to bottom-left (12,52).
-    (ctx) => { ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 52); ctx.lineTo(12, 52); ctx.fill(); }, 
-
-    // [Index 3] -> "geo_tile_3": Magenta Diamond
-    // Connects lines from top (32,12) to right (52,32) to bottom (32,52) to left (12,32).
-    (ctx) => { ctx.fillStyle = "#ff00ff"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 32); ctx.lineTo(32, 52); ctx.lineTo(12, 32); ctx.fill(); }, 
-
-    // [Index 4] -> "geo_tile_4": Green Cross / Plus Sign
-    // Overlaps a vertical rectangle (12x40px) and a horizontal rectangle (40x12px).
-    (ctx) => { ctx.fillStyle = "#22cc66"; ctx.fillRect(26, 12, 12, 40); ctx.fillRect(12, 26, 40, 12); }, 
-
-    // [Index 5] -> "geo_tile_5": Orange Hexagon
-    // Connects 6 perimeter path coordinates starting at the top point (32,12) and cycling clockwise.
-    (ctx) => { ctx.fillStyle = "#ff8800"; ctx.beginPath(); ctx.moveTo(32, 12); ctx.lineTo(52, 22); ctx.lineTo(52, 44); ctx.lineTo(32, 52); ctx.lineTo(12, 44); ctx.lineTo(12, 22); ctx.fill(); }, 
-
-    // [Index 6] -> "geo_tile_6": Cyan Rounded Rectangle / Capsule
-    // Draws a 32x40px rectangle rounded off smoothly by a corner radius border of 16px.
-    (ctx) => { ctx.fillStyle = "#00cccc"; ctx.beginPath(); ctx.roundRect(16, 12, 32, 40, 16); ctx.fill(); }, 
-
-    // [Index 7] -> "geo_tile_7": Cyan Vertical Oval
-    // Spits out an ellipse at pixel (32,32) with a horizontal radius of 16px and vertical radius of 24px.
-    (ctx) => { 
-        ctx.fillStyle = "#00cccc"; 
-        ctx.beginPath();
-        ctx.ellipse(32, 32, 16, 24, 0, 0, Math.PI * 2); 
-        ctx.fill(); 
-    } 
+    // ==================== NEW COLORED CIRCLES (Index 8 - 15) ====================
+    /* [8]  -> "geo_tile_8"  */ (ctx) => { ctx.fillStyle = "#ff5555"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Red Circle
+    /* [9]  -> "geo_tile_9"  */ (ctx) => { ctx.fillStyle = "#ff9933"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Orange Circle
+    /* [10] -> "geo_tile_10" */ (ctx) => { ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Yellow Circle
+    /* [11] -> "geo_tile_11" */ (ctx) => { ctx.fillStyle = "#22cc66"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Green Circle
+    /* [12] -> "geo_tile_12" */ (ctx) => { ctx.fillStyle = "#00cccc"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Cyan Circle
+    /* [13] -> "geo_tile_13" */ (ctx) => { ctx.fillStyle = "#5555ff"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Blue Circle
+    /* [14] -> "geo_tile_14" */ (ctx) => { ctx.fillStyle = "#aa55ff"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }, // Purple Circle
+    /* [15] -> "geo_tile_15" */ (ctx) => { ctx.fillStyle = "#ff00ff"; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI * 2); ctx.fill(); }  // Magenta Circle
 ];
 
 
