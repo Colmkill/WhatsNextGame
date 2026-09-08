@@ -574,7 +574,106 @@ const masterLevelPool = [
     "?", 
     "farm_tile_11", // <-- Correct Answer
     "farm_tile_0", "farm_tile_1", "farm_tile_5"
-]
+],
+     // ---------------------------------------------------------------------
+    // TIER 1: THE BEGINNER TRACK (Simple A-B Alternations, 3 Top / 4 Bottom)
+    // ---------------------------------------------------------------------
+    
+    // Level 1: Domino Baseline (Pip 1, Pip 2, Pip 1 -> Guess Pip 2)
+    [
+        "domino_tile_1", "domino_tile_2", "domino_tile_1", 
+        "?", 
+        "domino_tile_2", "domino_tile_0", "domino_tile_5", "domino_tile_6"
+    ],
+     
+    // Level 2: Basic Color Flip (Red Circle, Orange Circle, Red Circle -> Guess Orange)
+    [
+        "geo_tile_0", "geo_tile_1", "geo_tile_0", 
+        "?", 
+        "geo_tile_1", "geo_tile_2", "geo_tile_3", "geo_tile_4"
+    ],
+    
+    // Level 3: Barnyard Matching (Farmer, Tractor, Farmer -> Guess Tractor)
+    [
+        "farm_tile_10", "farm_tile_11", "farm_tile_10", 
+        "?", 
+        "farm_tile_11", "farm_tile_0", "farm_tile_1", "farm_tile_5"
+    ],
+
+    // ---------------------------------------------------------------------
+    // TIER 2: INTERMEDIATE LOGIC (Progressive Chains & Counting, 3 Top / 4 Bottom)
+    // ---------------------------------------------------------------------
+
+    // Level 4: Linear Counting Cards (Card 1, Card 2, Card 3 -> Guess Card 4)
+    [
+        "card_tile_1", "card_tile_2", "card_tile_3", 
+        "?", 
+        "card_tile_4", "card_tile_0", "card_tile_5", "card_tile_9"
+    ], 
+
+    // Level 5: Skip Counting Evens (Card 2, Card 4, Card 6 -> Guess Card 8)
+    [
+        "card_tile_2", "card_tile_4", "card_tile_6", 
+        "?", 
+        "card_tile_8", "card_tile_3", "card_tile_5", "card_tile_7"
+    ],
+    
+    // Level 6: Alphabetical Steps (Letter A, Letter B, Letter C -> Guess Letter D)
+    [
+        "letter_tile_0", "letter_tile_1", "letter_tile_2", 
+        "?", 
+        "letter_tile_3", "letter_tile_23", "letter_tile_11", "letter_tile_7"
+    ],
+
+    // ---------------------------------------------------------------------
+    // TIER 3: ADVANCED VISUALS (Jigsaw Interlocking & Textures, 3 Top / 4 Bottom)
+    // ---------------------------------------------------------------------
+
+    // Level 7: Jigsaw Connector Flow (Left Cap, Middle Bridge, Right Cap -> Needs downward anchor!)
+    [
+        "jigsaw_tile_0", "jigsaw_tile_1", "jigsaw_tile_2", 
+        "?", 
+        "jigsaw_tile_3", "jigsaw_tile_4", "jigsaw_tile_5", "jigsaw_tile_6"
+    ],
+    
+    // Level 8: Male/Female Interlocking Indentations (Right Tab -> Left Hole/Right Tab -> Needs Left Hole)
+    [
+        "hole_tile_0", "hole_tile_1", "hole_tile_0", 
+        "?", 
+        "hole_tile_1", "hole_tile_3", "hole_tile_4", "jigsaw_tile_6" 
+    ],
+
+    // Level 9: Texture Switching (Stripes, Polka Dots, Stripes -> Guess Polka Dots)
+    [
+        "pattern_tile_0", "pattern_tile_1", "pattern_tile_0", 
+        "?", 
+        "pattern_tile_1", "pattern_tile_2", "pattern_tile_3", "geo_tile_1"
+    ],
+
+    // ---------------------------------------------------------------------
+    // TIER 4: THE MASTER CLASS (Expanded Grids & Mental Stress, 4-5 Top / 5-6 Bottom)
+    // ---------------------------------------------------------------------
+
+    // Level 10: The Alphabet Sandwich (Letter C, Letter A, Letter T, Letter C -> Guess Letter A)
+    [
+        "letter_tile_2", "letter_tile_0", "letter_tile_19", "letter_tile_2",
+        "?", 
+        "letter_tile_0", "letter_tile_4", "letter_tile_14", "letter_tile_24", "letter_tile_5"
+    ],
+
+    // Level 11: Expanded Card Multi-Format (Card 1, Card 2, Card 3, Card 1 -> Guess Card 2)
+    [
+        "card_tile_1", "card_tile_2", "card_tile_3", "card_tile_1",
+        "?", 
+        "card_tile_2", "card_tile_4", "card_tile_5", "card_tile_6", "card_tile_7"
+    ],
+
+    // Level 12: The Mega Grid finale (Card 2, Card 3, Card 4, Card 5, Card 6 -> Guess Card 7 out of 6 options!)
+    [
+        "card_tile_2", "card_tile_3", "card_tile_4", "card_tile_5", "card_tile_6",
+        "?",
+        "card_tile_7", "card_tile_0", "card_tile_1", "card_tile_8", "card_tile_9", "geo_tile_0"
+    ]
 ];
 // =========================================================================
 // 4. LEVEL PARSING ENGINE
