@@ -333,6 +333,21 @@ const masterLevelPool = [
         [
         "letter_tile_0", "letter_tile_4", "letter_tile_8", 
         "letter_tile_14", "letter_tile_23", "letter_tile_11", "letter_tile_18"
+    ],
+    // EXPANDED FORMAT LEVEL (4 on top, 5 choices below)
+    // Pattern: A, B, C, A -> Guess B
+    [
+        "card_tile_1", "card_tile_2", "card_tile_3", "card_tile_1",
+        "?", 
+        "card_tile_2", "card_tile_4", "card_tile_5", "card_tile_6", "card_tile_7"
+    ],
+
+    // MEGA FORMAT LEVEL (5 on top, 6 choices below)
+    // Pattern: 2, 3, 4, 5, 6 -> Guess 7
+    [
+        "card_tile_2", "card_tile_3", "card_tile_4", "card_tile_5", "card_tile_6",
+        "?",
+        "card_tile_7", "card_tile_0", "card_tile_1", "card_tile_8", "card_tile_9", "geo_tile_0"
     ]
 ];
 
@@ -347,56 +362,77 @@ function drawDefaultFrame(ctx) {
 }
 
 function loadPresetPuzzle(tileBlueprint) {
-    const topSequence = tileBlueprint.slice(0, 3); 
-    const correctAnswer = tileBlueprint[3];         
-    const bottomOptions = tileBlueprint.slice(3, 7); 
+    // 1. DYNAMIC SPLIT RULES: 
+    // Find the "?" character to separate the top row sequence from the bottom choices
+    const questionIndex = tileBlueprint.indexOf("?");
+    
+    // Fallback error guard: if you forget to put a "?" in your manual level array
+    if (questionIndex === -1) {
+        console.error("Level error: Missing '?' marker in your level array blueprint!");
+        return;
+    }
 
-    // --- RENDERING TOP ROW ---
+    const topSequence = tileBlueprint.slice(0, questionIndex); 
+    const correctAnswer = tileBlueprint[questionIndex + 1];         
+    const bottomOptions = tileBlueprint.slice(questionIndex + 1); 
+
+    // ==================== RENDERING TOP ROW (AUTOSCALING) ====================
     destroyAll("top-puzzle-tile");
     
+    // Calculate adaptive spacing so any number of tiles center perfectly on screen
+    const topCount = topSequence.length + 1; // +1 includes the mystery slot
+    const topSpacing = Math.min(140, 700 / topCount); 
+    const topStartX = 400 - ((topCount - 1) * topSpacing) / 2;
+    const topScale = topCount > 4 ? 1.2 : 1.5; // Scale tiles down if row is long
+
     topSequence.forEach((spriteName, index) => {
         add([
             sprite(spriteName),
-            pos(180 + index * 140, 200),
+            pos(topStartX + index * topSpacing, 200),
             anchor("center"),
-            scale(1.5),
+            scale(topScale),
             "top-puzzle-tile"
         ]);
     });
 
-     // --- REPLACED SPRITE WITH A NATIVE RECTANGLE ---
+    // Render the placeholder mystery question mark box at the end of the sequence
     add([
-        rect(96, 96, { radius: 8 }), // 1.5 scale of 64x64 is 96x96 pixels
-        pos(180 + 3 * 140, 200),
-        color(40, 40, 80),        // Give it a permanent dark blue/grey backing
-        outline(4, "#ffffff"),    // Give it a crisp white border outline
+        rect(64 * topScale, 64 * topScale, { radius: 8 }),
+        pos(topStartX + (topCount - 1) * topSpacing, 200),
+        color(40, 40, 80),
+        outline(4, "#ffffff"),
         anchor("center"),
         "top-puzzle-tile"
     ]);
-
-    // Keep your text question mark exactly the same
     add([
-        text("?", { size: 32 }),
-        pos(180 + 3 * 140, 200),
+        text("?", { size: topCount > 5 ? 24 : 32 }),
+        pos(topStartX + (topCount - 1) * topSpacing, 200),
         anchor("center"),
         color(255, 255, 0),
         "top-puzzle-tile"
     ]);
 
-    // --- RENDERING BOTTOM ROW ---
+    // ==================== RENDERING BOTTOM ROW (AUTOSCALING) ====================
     destroyAll("bottom-selector-tile");
 
+    // Mix up all choice items so the correct answer lands in a random spot
     const shuffledOptions = shuffle(bottomOptions);
+    const bottomCount = shuffledOptions.length;
+    
+    // Calculate adaptive spacing so 4, 6, or 8 buttons distribute evenly
+    const bottomSpacing = Math.min(170, 740 / bottomCount);
+    const bottomStartX = 400 - ((bottomCount - 1) * bottomSpacing) / 2;
+    const bottomScale = bottomCount > 5 ? 1.1 : 1.5;
 
     shuffledOptions.forEach((spriteName, index) => {
-        const btnX = 145 + index * 170;
+        const btnX = bottomStartX + index * bottomSpacing;
         const btnY = 460;
 
         const btn = add([
             sprite(spriteName), 
             pos(btnX, btnY),
             anchor("center"),
-            scale(1.5),
+            scale(bottomScale),
             area(),
             "bottom-selector-tile"
         ]);
@@ -413,8 +449,7 @@ function loadPresetPuzzle(tileBlueprint) {
             }
         });
     });
-} // <-- FIXED: Added this missing brace to close loadPresetPuzzle cleanly!
-
+}
 // =========================================================================
 // 5. PROGRESSION HANDLER CONTROLLER
 // =========================================================================
