@@ -444,6 +444,71 @@ const indentedTheme = [
 ];
 
 // =========================================================================
+// DYNAMIC MATH GENERATOR ENGINE (Generates random math levels infinitely)
+// =========================================================================
+/**
+ * Automatically creates a handcrafted-style 7-tile math blueprint on the fly.
+ * Format generated: [Num1, Operator, Num2, "?", Answer, Decoy1, Decoy2, Decoy3]
+ */
+function loadDynamicMathLevel() {
+    // 1. Pick two random numbers between 1 and 5
+    const num1 = randi(1, 6);
+    const num2 = randi(1, 6);
+    
+    // 2. Randomly choose an operation: 0 for Addition (+), 1 for Subtraction (-)
+    const operation = choose([0, 1]);
+    
+    let operatorTile = "";
+    let answerValue = 0;
+
+    if (operation === 0) {
+        operatorTile = "+";     // You can map this to a custom symbol tile later
+        answerValue = num1 + num2;
+    } else {
+        operatorTile = "-";
+        // To avoid negative numbers for beginners, ensure the result is positive
+        answerValue = Math.max(num1, num2) - Math.min(num1, num2);
+    }
+
+    // Convert our raw values into your existing card asset string keys
+    const tile1String = `card_tile_${operation === 0 ? num1 : Math.max(num1, num2)}`;
+    const tile2String = `card_tile_${operation === 0 ? num2 : Math.min(num1, num2)}`;
+    
+    // Create an asset string key for the answer
+    const answerString = `card_tile_${answerValue}`;
+
+    // 3. Generate 3 unique wrong answers (decoys) that are mathematically close
+    let decoySet = new Set();
+    while (decoySet.size < 3) {
+        // Generate a fake answer close to the real answer (between answer - 2 and answer + 3)
+        let fakeAnswer = answerValue + choose([-2, -1, 1, 2, 3]);
+        // Keep fake answers positive and unique from the correct answer
+        if (fakeAnswer >= 0 && fakeAnswer !== answerValue && fakeAnswer <= 9) {
+            decoySet.add(`card_tile_${fakeAnswer}`);
+        }
+    }
+    const decoyArray = Array.from(decoySet);
+
+    // 4. Assemble the final 7-tile blueprint array dynamically
+    // The top row will display: [Number] [Plus/Minus] [Number]
+    // The bottom row will shuffle: [Answer] + [3 Decoys]
+    const dynamicBlueprint = [
+        tile1String, 
+        "geo_tile_4", // Temporarily using your Green Cross/Plus tile as the "+" operator!
+        tile2String,
+        "?", // The divider marker
+        answerString, 
+        decoyArray[0], 
+        decoyArray[1], 
+        decoyArray[2]
+    ];
+
+    // 5. Send this dynamically created level straight into your existing parsing engine
+    loadPresetPuzzle(dynamicBlueprint);
+}
+
+
+// =========================================================================
 // 3. MASTER LEVEL POOL MATRIX
 // =========================================================================
 const masterLevelPool = [
@@ -778,28 +843,61 @@ function loadPresetPuzzle(tileBlueprint) {
 // 5. PROGRESSION HANDLER CONTROLLER
 // =========================================================================
 function loadHandCraftedLevel() {
+    // 1. Check if the player has beaten all the manual handcrafted levels
     if (currentLevelIndex >= masterLevelPool.length) {
         destroyAll("top-puzzle-tile");
         destroyAll("bottom-selector-tile");
         
+        // Render the Victory Celebration layout
         add([
             text("YOU WIN!", { size: 48 }),
-            pos(400, 250),
+            pos(400, 200),
             anchor("center"),
             color(0, 255, 0)
         ]);
         add([
             text(`Final Score: ${score}`, { size: 24 }),
-            pos(400, 320),
+            pos(400, 270),
             anchor("center")
         ]);
-        return; 
+
+        // 2. Create an interactive button to enter Infinite Math practice mode
+        const mathBtn = add([
+            rect(320, 60, { radius: 8 }),
+            pos(400, 380),
+            color(100, 100, 250),
+            area(),
+            anchor("center")
+        ]);
+        
+        add([
+            text("ENTER INFINITE MATH", { size: 20 }),
+            pos(400, 380),
+            anchor("center"),
+            color(255, 255, 255)
+        ]);
+
+        // When clicked, clear the victory text and start generating infinite equations!
+        mathBtn.onClick(() => {
+            destroy(mathBtn);
+            destroyAll("text"); // Clear the win strings
+            
+            // Re-add the baseline score metrics to clean up the screen canvas layout
+            add([ text(`Score: ${score}`, { size: 22 }), pos(24, 24) ]);
+            add([ text("Level: Infinite Math", { size: 22 }), pos(24, 54), color(0, 255, 255) ]);
+
+            loadDynamicMathLevel(); 
+        });
+        
+        return; // Halt the standard level builder progression loops cleanly
     }
 
+    // 3. Standard Campaign level processing path (Runs for levels 1 to 12)
     levelLabel.text = `Level: ${currentLevelIndex + 1}`;
     const selectedLayout = masterLevelPool[currentLevelIndex];
     loadPresetPuzzle(selectedLayout);
 }
+
 
 // =========================================================================
 // 6. TEXTURE ENGINE GENERATOR
