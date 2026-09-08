@@ -105,8 +105,15 @@ const cardTheme = [
     (ctx) => { drawBaseCard(ctx, "6"); }, // Index 6 -> "card_tile_6"
     (ctx) => { drawBaseCard(ctx, "7"); }, // Index 7 -> "card_tile_7"
     (ctx) => { drawBaseCard(ctx, "8"); }, // Index 8 -> "card_tile_8"
-    (ctx) => { drawBaseCard(ctx, "9"); }  // Index 9 -> "card_tile_9"
+    (ctx) => { drawBaseCard(ctx, "9"); },  // Index 9 -> "card_tile_9"
+  // --- Operational Calculation Tiles (Indexes 10 - 13) ---
+    // Will register inside your engine as "card_tile_10" through "card_tile_13"
+    (ctx) => { drawBaseCard(ctx, "+"); }, // Index 10 -> "card_tile_10" (Add)
+    (ctx) => { drawBaseCard(ctx, "-"); }, // Index 11 -> "card_tile_11" (Subtract)
+    (ctx) => { drawBaseCard(ctx, "×"); }, // Index 12 -> "card_tile_12" (Multiply)
+    (ctx) => { drawBaseCard(ctx, "÷"); }  // Index 13 -> "card_tile_13" (Divide)
 ];
+
 
 // =========================================================================
 // 1. HELPER ALPHABET FUNCTION (Kept safely outside the array)
@@ -450,62 +457,78 @@ const indentedTheme = [
  * Automatically creates a handcrafted-style 7-tile math blueprint on the fly.
  * Format generated: [Num1, Operator, Num2, "?", Answer, Decoy1, Decoy2, Decoy3]
  */
+/**
+ * Advanced Math Generator: Dynamically produces infinite equations for all 4 operators.
+ * Format: [Num1, Operator, Num2, "?", Answer, 3 Unique Decoys]
+ */
 function loadDynamicMathLevel() {
-    // 1. Pick two random numbers between 1 and 5
-    const num1 = randi(1, 6);
-    const num2 = randi(1, 6);
+    // 1. Randomly pick an operation: 0=Add, 1=Sub, 2=Mult, 3=Div
+    const operation = choose([0, 1, 2, 3]);
     
-    // 2. Randomly choose an operation: 0 for Addition (+), 1 for Subtraction (-)
-    const operation = choose([0, 1]);
-    
-    let operatorTile = "";
+    let num1 = randi(1, 6);
+    let num2 = randi(1, 6);
+    let operatorTileKey = "";
     let answerValue = 0;
 
+    // 2. Compute the correct math rule equations
     if (operation === 0) {
-        operatorTile = "+";     // You can map this to a custom symbol tile later
+        operatorTileKey = "card_tile_10"; // Plus tile
         answerValue = num1 + num2;
-    } else {
-        operatorTile = "-";
-        // To avoid negative numbers for beginners, ensure the result is positive
-        answerValue = Math.max(num1, num2) - Math.min(num1, num2);
+    } 
+    else if (operation === 1) {
+        operatorTileKey = "card_tile_11"; // Minus tile
+        // Ensure result is never negative for starter playability
+        num1 = Math.max(num1, num2);
+        num2 = Math.min(num1, num2);
+        if (num1 === num2) num1 += 2; // Avoid boring "0" answers constantly
+        answerValue = num1 - num2;
+    } 
+    else if (operation === 2) {
+        operatorTileKey = "card_tile_12"; // Multiply tile
+        num1 = randi(1, 4); // Keep numbers small (1-3) so answers stay under 9
+        num2 = randi(1, 4);
+        answerValue = num1 * num2;
+    } 
+    else {
+        operatorTileKey = "card_tile_13"; // Divide tile
+        num2 = randi(1, 4); // The divisor
+        answerValue = randi(1, 4); // The clean result
+        num1 = answerValue * num2; // Working backwards ensures no nasty fraction answers!
     }
 
-    // Convert our raw values into your existing card asset string keys
-    const tile1String = `card_tile_${operation === 0 ? num1 : Math.max(num1, num2)}`;
-    const tile2String = `card_tile_${operation === 0 ? num2 : Math.min(num1, num2)}`;
-    
-    // Create an asset string key for the answer
+    // Convert values to asset string keys
+    const tile1String = `card_tile_${num1}`;
+    const tile2String = `card_tile_${num2}`;
     const answerString = `card_tile_${answerValue}`;
 
-    // 3. Generate 3 unique wrong answers (decoys) that are mathematically close
+    // 3. Generate 3 unique, mathematically plausible decoys close to the answer
     let decoySet = new Set();
     while (decoySet.size < 3) {
-        // Generate a fake answer close to the real answer (between answer - 2 and answer + 3)
         let fakeAnswer = answerValue + choose([-2, -1, 1, 2, 3]);
-        // Keep fake answers positive and unique from the correct answer
+        // Keep decoys positive, distinct, and capped within your 0-9 card bounds
         if (fakeAnswer >= 0 && fakeAnswer !== answerValue && fakeAnswer <= 9) {
             decoySet.add(`card_tile_${fakeAnswer}`);
         }
     }
     const decoyArray = Array.from(decoySet);
 
-    // 4. Assemble the final 7-tile blueprint array dynamically
-    // The top row will display: [Number] [Plus/Minus] [Number]
-    // The bottom row will shuffle: [Answer] + [3 Decoys]
+    // 4. Assemble the final variable format layout blueprint
+    // The top sequence row renders: [Number Card] [Operator Card] [Number Card]
     const dynamicBlueprint = [
         tile1String, 
-        "geo_tile_4", // Temporarily using your Green Cross/Plus tile as the "+" operator!
+        operatorTileKey, 
         tile2String,
-        "?", // The divider marker
+        "?", // Split divider wall
         answerString, 
         decoyArray[0], 
         decoyArray[1], 
         decoyArray[2]
     ];
 
-    // 5. Send this dynamically created level straight into your existing parsing engine
+    // 5. Send this dynamically created level straight into your existing auto-scaler layout
     loadPresetPuzzle(dynamicBlueprint);
 }
+
 
 
 // =========================================================================
