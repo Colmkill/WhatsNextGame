@@ -201,6 +201,29 @@ const animalTheme = [
 ];
 
 // =========================================================================
+// THEME SET H: FARM ANIMAL PICTURE TILES (Registers as "farm_tile_0" etc.)
+// =========================================================================
+const farmAnimalTheme = [
+    // --- Major Livestock (Index 0 - 4) ---
+    (ctx) => { drawAnimalTile(ctx, "🐮"); }, // Index 0  -> "farm_tile_0" (Cow Face)
+    (ctx) => { drawAnimalTile(ctx, "🐷"); }, // Index 1  -> "farm_tile_1" (Pig Face)
+    (ctx) => { drawAnimalTile(ctx, "🐑"); }, // Index 2  -> "farm_tile_2" (Sheep)
+    (ctx) => { drawAnimalTile(ctx, "🐐"); }, // Index 3  -> "farm_tile_3" (Goat)
+    (ctx) => { drawAnimalTile(ctx, "🐴"); }, // Index 4  -> "farm_tile_4" (Horse Face)
+
+    // --- Poultry & Birds (Index 5 - 8) ---
+    (ctx) => { drawAnimalTile(ctx, "🐔"); }, // Index 5  -> "farm_tile_5" (Chicken)
+    (ctx) => { drawAnimalTile(ctx, "🐓"); }, // Index 6  -> "farm_tile_6" (Rooster)
+    (ctx) => { drawAnimalTile(ctx, "🦆"); }, // Index 7  -> "farm_tile_7" (Duck)
+    (ctx) => { drawAnimalTile(ctx, "🪿"); }, // Index 8  -> "farm_tile_8" (Goose)
+
+    // --- Barnyard Companions & Helpers (Index 9 - 11) ---
+    (ctx) => { drawAnimalTile(ctx, "🫏"); }, // Index 9  -> "farm_tile_9" (Donkey)
+    (ctx) => { drawAnimalTile(ctx, "🧑‍🌾"); }, // Index 10 -> "farm_tile_10" (Farmer)
+    (ctx) => { drawAnimalTile(ctx, "🚜"); }  // Index 11 -> "farm_tile_11" (Tractor)
+];
+
+// =========================================================================
 // 1. DYNAMIC REPETITIVE PATTERNS THEME (4 Unique Styles)
 // =========================================================================
 const patternedTheme = [
@@ -545,7 +568,13 @@ const masterLevelPool = [
         "?", 
         "hole_tile_1", // <-- Correct Answer: Continues alternating tab/hole chain
         "hole_tile_3", "hole_tile_4", "jigsaw_tile_6" 
-    ]
+    ],
+    [
+    "farm_tile_10", "farm_tile_11", "farm_tile_10", 
+    "?", 
+    "farm_tile_11", // <-- Correct Answer
+    "farm_tile_0", "farm_tile_1", "farm_tile_5"
+]
 ];
 // =========================================================================
 // 4. LEVEL PARSING ENGINE
@@ -725,4 +754,5 @@ generateTileTheme("animal", animalTheme);
 generateTileTheme("pattern", patternedTheme);
 generateTileTheme("jigsaw", jigsawTheme); 
 generateTileTheme("hole", indentedTheme);
+generateTileTheme("farm", farmAnimalTheme);
 loadHandCraftedLevel();
