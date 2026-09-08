@@ -334,6 +334,91 @@ const jigsawTheme = [
     // [Index 6] -> Magenta Isolated Block (Smooth flat edges, no connectors)
     (ctx) => { drawJigsawPiece(ctx, "#ff00ff", "none"); }
 ];
+// =========================================================================
+// 1. HELPER INDENTED PUZZLE PIECE TOOL (Kept safely outside the array)
+// =========================================================================
+/**
+ * Draws a puzzle shape with options for both outward tabs and inward indentations.
+ * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
+ * @param {string} fillColor - The base background color.
+ * @param {string} tabs - Compass directions for outward tabs (e.g. "top")
+ * @param {string} holes - Compass directions for inward holes/indentations (e.g. "left")
+ */
+function drawIndentedPiece(ctx, fillColor, tabs = "", holes = "") {
+    ctx.fillStyle = fillColor;
+    ctx.beginPath();
+    
+    // Core box frame edges map from X:12 to 52, Y:12 to 52
+    ctx.moveTo(12, 12);
+    
+    // --- TOP EDGE ---
+    if (tabs.includes("top")) {
+        ctx.lineTo(26, 12);
+        ctx.arc(32, 12, 6, Math.PI, 0, false); // Outward Tab
+    } else if (holes.includes("top")) {
+        ctx.lineTo(26, 12);
+        ctx.arc(32, 12, 6, Math.PI, 0, true);  // Inward Hole / Indentation
+    }
+    ctx.lineTo(52, 12);
+    
+    // --- RIGHT EDGE ---
+    if (tabs.includes("right")) {
+        ctx.lineTo(52, 26);
+        ctx.arc(52, 32, 6, Math.PI * 1.5, Math.PI * 0.5, false); // Outward Tab
+    } else if (holes.includes("right")) {
+        ctx.lineTo(52, 26);
+        ctx.arc(52, 32, 6, Math.PI * 1.5, Math.PI * 0.5, true);  // Inward Hole / Indentation
+    }
+    ctx.lineTo(52, 52);
+    
+    // --- BOTTOM EDGE ---
+    if (tabs.includes("bottom")) {
+        ctx.lineTo(38, 52);
+        ctx.arc(32, 52, 6, 0, Math.PI, false); // Outward Tab
+    } else if (holes.includes("bottom")) {
+        ctx.lineTo(38, 52);
+        ctx.arc(32, 52, 6, 0, Math.PI, true);  // Inward Hole / Indentation
+    }
+    ctx.lineTo(12, 52);
+    
+    // --- LEFT EDGE ---
+    if (tabs.includes("left")) {
+        ctx.lineTo(12, 38);
+        ctx.arc(12, 32, 6, Math.PI * 0.5, Math.PI * 1.5, false); // Outward Tab
+    } else if (holes.includes("left")) {
+        ctx.lineTo(12, 38);
+        ctx.arc(12, 32, 6, Math.PI * 0.5, Math.PI * 1.5, true);  // Inward Hole / Indentation
+    }
+    ctx.lineTo(12, 12);
+    
+    ctx.closePath();
+    ctx.fill();
+
+    // Subtle edge framing highlight line
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+}
+
+// =========================================================================
+// 2. THEME SET G: INDENTED PIECES (Registers as "hole_tile_0" etc.)
+// =========================================================================
+const indentedTheme = [
+    // [Index 0] -> Red Starter block (Tab on Right, Indentation on Bottom)
+    (ctx) => { drawIndentedPiece(ctx, "#ff5555", "right", "bottom"); },
+    
+    // [Index 1] -> Blue Receiving block (Indentation on Left, Tab on Right)
+    (ctx) => { drawIndentedPiece(ctx, "#5555ff", "right", "left"); },
+    
+    // [Index 2] -> Yellow Receiving block (Indentation on Left, Tab on Bottom)
+    (ctx) => { drawIndentedPiece(ctx, "#ffcc00", "bottom", "left"); },
+    
+    // [Index 3] -> Green Capsular block (Indentation on Top, Tab on Bottom)
+    (ctx) => { drawIndentedPiece(ctx, "#22cc66", "bottom", "top"); },
+    
+    // [Index 4] -> Orange Inverse block (Holes on Top, Bottom, Left, and Right)
+    (ctx) => { drawIndentedPiece(ctx, "#ff8800", "", "top-bottom-left-right"); }
+];
 
 // =========================================================================
 // 3. MASTER LEVEL POOL MATRIX
@@ -454,6 +539,12 @@ const masterLevelPool = [
         "jigsaw_tile_0", "jigsaw_tile_1", "jigsaw_tile_2", 
         "?", 
         "jigsaw_tile_3", "jigsaw_tile_4", "jigsaw_tile_5", "jigsaw_tile_6" // 3 is correct answer
+    ],
+        [
+        "hole_tile_0", "hole_tile_1", "hole_tile_0", 
+        "?", 
+        "hole_tile_1", // <-- Correct Answer: Continues alternating tab/hole chain
+        "hole_tile_3", "hole_tile_4", "jigsaw_tile_6" 
     ]
 ];
 // =========================================================================
@@ -633,4 +724,5 @@ generateTileTheme("letter", alphabetTheme);
 generateTileTheme("animal", animalTheme); 
 generateTileTheme("pattern", patternedTheme);
 generateTileTheme("jigsaw", jigsawTheme); 
+generateTileTheme("hole", indentedTheme);
 loadHandCraftedLevel();
