@@ -255,7 +255,85 @@ const patternedTheme = [
         ctx.beginPath(); ctx.arc(32, 32, 10, 0, Math.PI * 2); ctx.stroke();
     }
 ];
+// =========================================================================
+// 1. HELPER PUZZLE PIECE DRAWING TOOL (Kept safely outside the array)
+// =========================================================================
+/**
+ * Draws a clean jigsaw puzzle shape backing and centers an asset or color inside it.
+ * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
+ * @param {string} fillColor - The base background color of this specific piece.
+ * @param {string} tabDirections - Directions that have protruding tabs e.g., "right", "top", "none".
+ */
+function drawJigsawPiece(ctx, fillColor, tabDirections = "none") {
+    ctx.fillStyle = fillColor;
+    ctx.beginPath();
+    
+    // Base square dimensions (inset slightly to leave breathing room for tabs)
+    // Core box sits from X:12 to 52, Y:12 to 52 (40x40 pixels)
+    ctx.moveTo(12, 12);
+    
+    // --- TOP EDGE ---
+    if (tabDirections.includes("top")) {
+        ctx.lineTo(26, 12);
+        ctx.arc(32, 12, 6, Math.PI, 0, false); // Outward Tab
+    }
+    ctx.lineTo(52, 12);
+    
+    // --- RIGHT EDGE ---
+    if (tabDirections.includes("right")) {
+        ctx.lineTo(52, 26);
+        ctx.arc(52, 32, 6, Math.PI * 1.5, Math.PI * 0.5, false); // Outward Tab
+    }
+    ctx.lineTo(52, 52);
+    
+    // --- BOTTOM EDGE ---
+    if (tabDirections.includes("bottom")) {
+        ctx.lineTo(38, 52);
+        ctx.arc(32, 52, 6, 0, Math.PI, false); // Outward Tab
+    }
+    ctx.lineTo(12, 52);
+    
+    // --- LEFT EDGE ---
+    if (tabDirections.includes("left")) {
+        ctx.lineTo(12, 38);
+        ctx.arc(12, 32, 6, Math.PI * 0.5, Math.PI * 1.5, false); // Outward Tab
+    }
+    ctx.lineTo(12, 12);
+    
+    ctx.closePath();
+    ctx.fill();
 
+    // Give the jigsaw piece a subtle inner plastic/cardboard shine accent
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+}
+
+// =========================================================================
+// 2. THEME SET F: JIGSAW PUZZLE PIECES (Registers as "jigsaw_tile_0" etc.)
+// =========================================================================
+const jigsawTheme = [
+    // [Index 0] -> Red Corner Piece (protrudes Right and Bottom)
+    (ctx) => { drawJigsawPiece(ctx, "#ff5555", "right-bottom"); },
+    
+    // [Index 1] -> Blue Edge Piece (protrudes Left, Right, and Bottom)
+    (ctx) => { drawJigsawPiece(ctx, "#5555ff", "left-right-bottom"); },
+    
+    // [Index 2] -> Yellow Corner Piece (protrudes Left and Bottom)
+    (ctx) => { drawJigsawPiece(ctx, "#ffcc00", "left-bottom"); },
+    
+    // [Index 3] -> Green Middle Piece (protrudes Top, Bottom, Left, and Right)
+    (ctx) => { drawJigsawPiece(ctx, "#22cc66", "top-bottom-left-right"); },
+    
+    // [Index 4] -> Orange Vertical Piece (protrudes Top and Bottom)
+    (ctx) => { drawJigsawPiece(ctx, "#ff8800", "top-bottom"); },
+    
+    // [Index 5] -> Purple Horizontal Piece (protrudes Left and Right)
+    (ctx) => { drawJigsawPiece(ctx, "#aa55ff", "left-right"); },
+    
+    // [Index 6] -> Magenta Isolated Block (Smooth flat edges, no connectors)
+    (ctx) => { drawJigsawPiece(ctx, "#ff00ff", "none"); }
+];
 
 // =========================================================================
 // 3. MASTER LEVEL POOL MATRIX
@@ -371,6 +449,11 @@ const masterLevelPool = [
         "card_tile_2", "card_tile_3", "card_tile_4", "card_tile_5", "card_tile_6",
         "?",
         "card_tile_7", "card_tile_0", "card_tile_1", "card_tile_8", "card_tile_9", "geo_tile_0"
+    ],
+      [
+        "jigsaw_tile_0", "jigsaw_tile_1", "jigsaw_tile_2", 
+        "?", 
+        "jigsaw_tile_3", "jigsaw_tile_4", "jigsaw_tile_5", "jigsaw_tile_6" // 3 is correct answer
     ]
 ];
 // =========================================================================
@@ -549,4 +632,5 @@ generateTileTheme("card", cardTheme);
 generateTileTheme("letter", alphabetTheme);
 generateTileTheme("animal", animalTheme); 
 generateTileTheme("pattern", patternedTheme);
+generateTileTheme("jigsaw", jigsawTheme); 
 loadHandCraftedLevel();
