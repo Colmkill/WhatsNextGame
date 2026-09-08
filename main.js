@@ -264,93 +264,115 @@ const masterLevelPool = [
     // Level 1: Domino Progression (Pip 1, Pip 2, Pip 3 -> Guess Pip 4)
     [
         "domino_tile_1", "domino_tile_2", "domino_tile_3", 
+        "?", // <-- Added divider
         "domino_tile_4", "domino_tile_0", "domino_tile_5", "domino_tile_6"
     ],
      
     // Level 2: Geometry Alternating (Circle, Square, Circle -> Guess Square)
     [
         "geo_tile_0", "geo_tile_1", "geo_tile_0", 
+        "?", // <-- Added divider
         "geo_tile_1", "geo_tile_2", "geo_tile_3", "geo_tile_4"
     ],
+    
+    // Level 3: Mixed Geometry Run
     [
         "geo_tile_0", "geo_tile_7", "geo_tile_2", 
+        "?", // <-- Added divider
         "geo_tile_1", "geo_tile_2", "geo_tile_3", "geo_tile_4"
     ],
-    // Level 3: Mixed Challenge (Cross, Hex, Cross -> Guess Hex)
+
+    // Level 4: Mixed Challenge (Cross, Hex, Cross -> Guess Hex)
     [
         "geo_tile_4", "geo_tile_5", "geo_tile_4", 
+        "?", // <-- Added divider
         "geo_tile_5", "geo_tile_6", "domino_tile_2", "domino_tile_1"
-    ], // <-- Make sure there is a comma here to separate the levels!
+    ], 
     
-    // Level 4: The Oval Launch (Oval, Square, Oval -> Guess Square)
+    // Level 5: The Oval Launch (Oval, Square, Oval -> Guess Square)
     [
         "geo_tile_7", "geo_tile_1", "geo_tile_7",
+        "?", // <-- Added divider
         "geo_tile_1", "geo_tile_0", "geo_tile_3", "geo_tile_5"
     ],
-        // New Level: Lion, Tiger, Lion -> Guess Tiger! (Using slots 0 and 1)
+
+    // Level 6: Animal Sequence (Lion, Tiger, Lion -> Guess Tiger!)
     [
         "animal_tile_0", "animal_tile_1", "animal_tile_0", 
-        "animal_tile_1", // <-- The winning tile setup position
-        "animal_tile_3", "animal_tile_4", "animal_tile_5"
+        "?", // <-- Added divider
+        "animal_tile_1", "animal_tile_3", "animal_tile_4", "animal_tile_5"
     ],
-
     
-    // Level 5: High-Pip Domino Race (Pip 4, Pip 5, Pip 6 -> Guess Pip 3? No, progressive down!)
+    // Level 7: High-Pip Domino Race (Pip 6, Pip 5, Pip 4 -> Guess Pip 3)
     [
         "domino_tile_6", "domino_tile_5", "domino_tile_4",
+        "?", // <-- Added divider
         "domino_tile_3", "domino_tile_0", "domino_tile_1", "domino_tile_2"
     ],
-     [
+
+    // Level 8: Card Counting Progression (1, 2, 3 -> Guess Card 4)
+    [
         "card_tile_1", "card_tile_2", "card_tile_3", 
+        "?", // <-- Added divider
         "card_tile_4", "card_tile_0", "card_tile_5", "card_tile_9"
     ],
-    // New Level 5: Skip Count Sequence Pattern Challenge (2, 4, 6 -> Guess Card 8)
+
+    // Level 9: Skip Count Sequence Pattern Challenge (2, 4, 6 -> Guess Card 8)
     [
         "card_tile_2", "card_tile_4", "card_tile_6", 
+        "?", // <-- Added divider
         "card_tile_8", "card_tile_3", "card_tile_5", "card_tile_7"
     ],
-        // New Level: Spell a simple pattern (C, A, T -> Guess T? No, spell CAT twice: C, A, T -> Guess C)
+
+    // Level 10: Spell a simple pattern (C, A, T -> Guess C)
     [
         "letter_tile_2", "letter_tile_0", "letter_tile_19", 
+        "?", // <-- Added divider
         "letter_tile_2", "letter_tile_4", "letter_tile_14", "letter_tile_24"
     ],
-    // New Level: Alphabetical ordering progression (A, B, C -> Guess D)
+
+    // Level 11: Alphabetical ordering progression (A, B, C -> Guess D)
     [
         "letter_tile_0", "letter_tile_1", "letter_tile_2", 
+        "?", // <-- Added divider
         "letter_tile_3", "letter_tile_23", "letter_tile_11", "letter_tile_7"
     ],
     
-     [
+    // Level 12: Visual Texture Layout (Stripes, Polka, Stripes -> Guess Polka!)
+    [
         "pattern_tile_0", "pattern_tile_1", "pattern_tile_0", 
-        "pattern_tile_1", // <-- Correct answer mapping slot index position
-        "pattern_tile_2", "pattern_tile_3", "geo_tile_1"
+        "?", // <-- Added divider
+        "pattern_tile_1", "pattern_tile_2", "pattern_tile_3", "geo_tile_1"
     ],
     
+    // Level 13: Alphabet Step Pattern 1
     [
         "letter_tile_5", "letter_tile_14", "letter_tile_17", 
+        "?", // <-- Added divider
         "letter_tile_19", "letter_tile_23", "letter_tile_11", "letter_tile_18"
     ],
-        [
+
+    // Level 14: Alphabet Step Pattern 2
+    [
         "letter_tile_0", "letter_tile_4", "letter_tile_8", 
+        "?", // <-- Added divider
         "letter_tile_14", "letter_tile_23", "letter_tile_11", "letter_tile_18"
     ],
-    // EXPANDED FORMAT LEVEL (4 on top, 5 choices below)
-    // Pattern: A, B, C, A -> Guess B
+
+    // Level 15: EXPANDED FORMAT LEVEL (4 on top, 5 choices below)
     [
         "card_tile_1", "card_tile_2", "card_tile_3", "card_tile_1",
         "?", 
         "card_tile_2", "card_tile_4", "card_tile_5", "card_tile_6", "card_tile_7"
     ],
 
-    // MEGA FORMAT LEVEL (5 on top, 6 choices below)
-    // Pattern: 2, 3, 4, 5, 6 -> Guess 7
+    // Level 16: MEGA FORMAT LEVEL (5 on top, 6 choices below)
     [
         "card_tile_2", "card_tile_3", "card_tile_4", "card_tile_5", "card_tile_6",
         "?",
         "card_tile_7", "card_tile_0", "card_tile_1", "card_tile_8", "card_tile_9", "geo_tile_0"
     ]
 ];
-
 // =========================================================================
 // 4. LEVEL PARSING ENGINE
 // =========================================================================
